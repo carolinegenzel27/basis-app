@@ -17,8 +17,11 @@ export default async function DashboardPage() {
         <Link href="/branding" className="text-slate-900 underline">
           מיתוג ומיצוב
         </Link>
+        <Link href="/pricing-advisor" className="text-slate-900 underline">
+          יועץ תמחור
+        </Link>
         <p className="text-sm text-gray-400">
-          יועץ תמחור, הצעות מחיר, ודף עסק ציבורי - בקרוב
+          הצעות מחיר, ודף עסק ציבורי - בקרוב
         </p>
       </div>
 
