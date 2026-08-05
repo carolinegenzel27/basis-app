@@ -10,7 +10,7 @@ export default async function BrandingPage() {
 
   const { data: businessProfile } = await supabase
     .from("business_profiles")
-    .select("id")
+    .select("id, profession")
     .eq("user_id", user!.id)
     .maybeSingle();
 
@@ -41,7 +41,10 @@ export default async function BrandingPage() {
         </p>
       </div>
 
-      <BrandingQuestionnaire existingAnswers={branding?.answers ?? undefined} />
+      <BrandingQuestionnaire
+        profession={businessProfile.profession}
+        existingAnswers={branding?.answers ?? undefined}
+      />
 
       {branding?.uvp_statement && (
         <div className="pt-6 border-t border-gray-200">

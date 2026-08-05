@@ -3,39 +3,43 @@
 import { useActionState } from "react";
 import { saveBrandingAnswers, type ActionState } from "@/lib/actions/branding";
 import { SubmitButton } from "@/components/ui/SubmitButton";
+import {
+  getBrandingQuestions,
+  type Profession,
+} from "@/lib/templates/branding-questions";
 
 const initialState: ActionState = { success: false };
 
-const FIELDS: { name: string; label: string }[] = [
-  { name: "ideal_client", label: "מי הלקוח האידיאלי שלך?" },
-  { name: "problem_solved", label: "איזו בעיה עיקרית את/ה פותר/ת עבורו?" },
-  { name: "desired_outcome", label: "לאיזו תוצאה הלקוח מגיע אחרי שעבד איתך?" },
-  { name: "unique_approach", label: "מה מייחד את הגישה או השיטה שלך?" },
-  { name: "credential", label: "הישג או ניסיון בולט (שנים, הסמכה, כמות לקוחות)" },
-  { name: "cta", label: "מה הפעולה הבאה שאת רוצה שהלקוח יעשה?" },
-];
-
 export function BrandingQuestionnaire({
+  profession,
   existingAnswers,
 }: {
+  profession: Profession;
   existingAnswers?: Record<string, string>;
 }) {
   const [state, formAction] = useActionState(saveBrandingAnswers, initialState);
+  const fields = getBrandingQuestions(profession);
 
   return (
     <form action={formAction} className="space-y-4">
-      {FIELDS.map((field) => (
+      <p className="text-xs text-gray-500 -mt-2">
+        עני/ה בביטוי קצר לכל שאלה, לא במשפט שלם - זה מה שהופך את התוצאה
+        לקריאה וברורה.
+      </p>
+      {fields.map((field) => (
         <div key={field.name}>
           <label htmlFor={field.name} className="block text-sm font-medium mb-1">
             {field.label}
           </label>
-          <textarea
+          <input
             id={field.name}
             name={field.name}
+            type="text"
             required
-            rows={2}
+            maxLength={60}
+            placeholder={field.placeholder}
             defaultValue={existingAnswers?.[field.name] ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900 placeholder:text-gray-400"
           />
         </div>
       ))}
