@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PricingAdvisorForm } from "@/components/forms/PricingAdvisorForm";
 
@@ -12,6 +13,18 @@ export default async function PricingAdvisorPage() {
     .select("id, profession")
     .eq("user_id", user!.id)
     .maybeSingle();
+
+  if (businessProfile) {
+    const { data: fitAssessment } = await supabase
+      .from("fit_assessments")
+      .select("id")
+      .eq("business_profile_id", businessProfile.id)
+      .maybeSingle();
+
+    if (!fitAssessment) {
+      redirect("/fit-assessment");
+    }
+  }
 
   if (!businessProfile) {
     return (

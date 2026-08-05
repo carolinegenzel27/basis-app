@@ -64,5 +64,7 @@ export async function createBusinessProfile(
     return { success: false, error: error.message };
   }
 
-  redirect("/dashboard");
+  // First stop after onboarding is the fit assessment, not the dashboard -
+  // the dashboard itself will redirect here too if it's ever skipped.
+  redirect("/fit-assessment");
 }

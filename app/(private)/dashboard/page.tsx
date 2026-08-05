@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/lib/actions/auth";
 
@@ -7,6 +8,26 @@ export default async function DashboardPage() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  // Gate: the fit assessment is a required one-time step right after
+  // onboarding. If it hasn't been completed yet, send the user there first.
+  const { data: businessProfile } = await supabase
+    .from("business_profiles")
+    .select("id")
+    .eq("user_id", user!.id)
+    .maybeSingle();
+
+  if (businessProfile) {
+    const { data: fitAssessment } = await supabase
+      .from("fit_assessments")
+      .select("id")
+      .eq("business_profile_id", businessProfile.id)
+      .maybeSingle();
+
+    if (!fitAssessment) {
+      redirect("/fit-assessment");
+    }
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-8 space-y-6">

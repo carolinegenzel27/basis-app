@@ -56,20 +56,38 @@ export async function getPricingRecommendation(
     return { success: false, error: "לא נמצאו נתוני תמחור עבור הבחירה הזו" };
   }
 
-  const { error } = await supabase.from("pricing_recommendations").insert({
-    business_profile_id: businessProfile.id,
-    profession: businessProfile.profession,
-    project_type: parsed.data.project_type,
-    project_type_label: pricingRow.project_type_label,
-    recommended_min: pricingRow.price_min,
-    recommended_max: pricingRow.price_max,
-  });
+  // Don't save a duplicate history row if the last recommendation for this
+  // exact project type already has the same price range.
+  const { data: lastRecommendation } = await supabase
+    .from("pricing_recommendations")
+    .select("recommended_min, recommended_max")
+    .eq("business_profile_id", businessProfile.id)
+    .eq("project_type", parsed.data.project_type)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
-  if (error) {
-    return { success: false, error: error.message };
+  const isSameAsLast =
+    lastRecommendation &&
+    Number(lastRecommendation.recommended_min) === Number(pricingRow.price_min) &&
+    Number(lastRecommendation.recommended_max) === Number(pricingRow.price_max);
+
+  if (!isSameAsLast) {
+    const { error } = await supabase.from("pricing_recommendations").insert({
+      business_profile_id: businessProfile.id,
+      profession: businessProfile.profession,
+      project_type: parsed.data.project_type,
+      project_type_label: pricingRow.project_type_label,
+      recommended_min: pricingRow.price_min,
+      recommended_max: pricingRow.price_max,
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    revalidatePath("/pricing-advisor");
   }
-
-  revalidatePath("/pricing-advisor");
 
   return {
     success: true,

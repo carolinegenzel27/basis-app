@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BrandingQuestionnaire } from "@/components/forms/BrandingQuestionnaire";
 import { MarketingContentDisplay } from "@/components/forms/MarketingContentDisplay";
@@ -13,6 +14,18 @@ export default async function BrandingPage() {
     .select("id, profession")
     .eq("user_id", user!.id)
     .maybeSingle();
+
+  if (businessProfile) {
+    const { data: fitAssessment } = await supabase
+      .from("fit_assessments")
+      .select("id")
+      .eq("business_profile_id", businessProfile.id)
+      .maybeSingle();
+
+    if (!fitAssessment) {
+      redirect("/fit-assessment");
+    }
+  }
 
   const { data: branding } = businessProfile
     ? await supabase
