@@ -10,42 +10,55 @@
 -- project type. Rows marked "ישיר ממידרג" below are numbers stated directly on the
 -- page. Rows marked "הערכה" are calculated/estimated from midrag's numbers (e.g. no
 -- quantity discount on driving lessons -> package price = lessons x single price).
+--
+-- Also fixing project_type_label here - it was seeded in English by mistake, which
+-- is why the pricing advisor page showed English text ("Single lesson" etc.) inside
+-- an otherwise Hebrew UI.
 
 -- Driving instructor
 update market_pricing_data set price_min = 160, price_max = 200,
+  project_type_label = 'שיעור בודד',
   source = 'מידרג - מחיר שיעור נהיגה (ישיר ממידרג, מעודכן לפברואר 2026) - https://www.midrag.co.il/Content/Price/13572'
   where profession = 'driving_instructor' and project_type = 'single_lesson';
 
 update market_pricing_data set price_min = 1600, price_max = 2000,
+  project_type_label = 'חבילת 10 שיעורים',
   source = 'הערכה: 10 x מחיר שיעור בודד (מידרג מציינים שכמות שיעורים לא משנה את המחיר לשיעור) - https://www.midrag.co.il/Content/Price/13572'
   where profession = 'driving_instructor' and project_type = 'package_10';
 
 update market_pricing_data set price_min = 900, price_max = 1300,
+  project_type_label = 'הכנה אינטנסיבית לטסט',
   source = 'הערכה: שיעורים נוספים + טסט פנימי (100-300 ₪) + תשלום למורה בטסט חיצוני (עד 231 ₪) - https://www.midrag.co.il/Content/Price/13572'
   where profession = 'driving_instructor' and project_type = 'test_prep_intensive';
 
 -- Dietitian
 update market_pricing_data set price_min = 450, price_max = 550,
+  project_type_label = 'פגישה בודדת',
   source = 'מידרג - דיאטניות מחירים (ישיר ממידרג) - https://www.midrag.co.il/Content/Price/6192'
   where profession = 'dietitian' and project_type = 'single_consultation';
 
 update market_pricing_data set price_min = 1600, price_max = 2000,
+  project_type_label = 'תוכנית חודשית',
   source = 'הערכה: כ-4 פגישות בחודש, בהנחה שמידרג מציינים לגבי הנחה על סדרת פגישות שנקבעת מראש - https://www.midrag.co.il/Content/Price/6192'
   where profession = 'dietitian' and project_type = 'monthly_program';
 
 update market_pricing_data set price_min = 350, price_max = 450,
+  project_type_label = 'פגישת מעקב',
   source = 'הערכה: מידרג מציינים שחלק מהדיאטניות נותנות הנחה לפגישות המשך - https://www.midrag.co.il/Content/Price/6192'
   where profession = 'dietitian' and project_type = 'follow_up_session';
 
 -- Private chef
 update market_pricing_data set price_min = 2000, price_max = 2640,
+  project_type_label = 'ארוחת ערב חד-פעמית',
   source = 'מידרג - שף פרטי מחיר (ישיר ממידרג: מינימום זוגי 2,000 ₪ עד הצעת מחיר אמיתית ל-8 סועדים 2,640 ₪) - https://www.midrag.co.il/Content/Price/10566'
   where profession = 'private_chef' and project_type = 'single_dinner_event';
 
 update market_pricing_data set price_min = 3500, price_max = 4500,
+  project_type_label = 'קייטרינג לאירוע קטן',
   source = 'הערכה: 350-450 ₪ לסועד (מחיר לאירוע עם יותר משתתפים לפי מידרג) עבור כ-10 סועדים - https://www.midrag.co.il/Content/Price/10566'
   where profession = 'private_chef' and project_type = 'catering_small_event';
 
 update market_pricing_data set price_min = 1200, price_max = 2000,
+  project_type_label = 'ליווי שבועי להכנת ארוחות',
   source = 'אין נתון ישיר במידרג - שף פרטי במידרג מתמקד באירועים חד-פעמיים בלבד, לא בליווי שבועי שוטף. נשאר כהערכה גסה.'
   where profession = 'private_chef' and project_type = 'weekly_meal_prep';

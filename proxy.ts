@@ -8,6 +8,12 @@ import { NextResponse, type NextRequest } from "next/server";
 // Server Component can't write cookies during render (Next.js blocks it),
 // so without this middleware a rotated token would just get silently
 // dropped, and the user could get logged out unexpectedly mid-session.
+//
+// Named "proxy.ts" (not "middleware.ts") because Next.js 16 renamed the
+// convention - the file used to be called middleware.ts, and older guides
+// (including Supabase's own docs) still refer to it that way, but the
+// framework itself now expects this exact filename + an exported "proxy"
+// function instead of "middleware".
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({ request });
 
