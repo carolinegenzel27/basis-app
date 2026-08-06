@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/lib/actions/auth";
+import { PublicLinkCopyButton } from "@/components/ui/PublicLinkCopyButton";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -13,7 +14,7 @@ export default async function DashboardPage() {
   // onboarding. If it hasn't been completed yet, send the user there first.
   const { data: businessProfile } = await supabase
     .from("business_profiles")
-    .select("id")
+    .select("id, slug")
     .eq("user_id", user!.id)
     .maybeSingle();
 
@@ -44,10 +45,21 @@ export default async function DashboardPage() {
         <Link href="/quotes" className="text-slate-900 underline">
           הצעות מחיר
         </Link>
-        <p className="text-sm text-gray-400">
-          דף עסק ציבורי - בקרוב
-        </p>
+        <Link href="/public-profile" className="text-slate-900 underline">
+          הכנת עמוד ציבורי
+        </Link>
       </div>
+
+      {businessProfile?.slug && (
+        <div className="rounded-lg border border-gray-200 p-4 space-y-2">
+          <p className="text-sm font-medium">הדף הציבורי שלך</p>
+          <p className="text-xs text-gray-500">
+            זו הכתובת שאפשר לשלוח ללקוחות פוטנציאליים - היא מציגה את שם
+            העסק והמיתוג שלך, בלי צורך בהתחברות.
+          </p>
+          <PublicLinkCopyButton slug={businessProfile.slug} />
+        </div>
+      )}
 
       <form action={signOutAction}>
         <button
