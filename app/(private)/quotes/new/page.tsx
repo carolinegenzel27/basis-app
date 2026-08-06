@@ -40,9 +40,9 @@ export default async function NewQuotePage({
   let defaultPrice: number | undefined;
   let defaultDocumentTitle = "";
   let pricingRecommendationId: string | undefined;
-  // Shown as a reminder note under the price field in the form itself - not
-  // just in the final PDF - so the user sees our market-based number while
-  // they're still deciding what to charge, not only after the fact.
+  // Shown as a reminder note under the price field in the form only - the
+  // client-facing PDF deliberately never includes it (the client shouldn't
+  // see the quote is based on a market average).
   let marketRange: { min: number; max: number } | undefined;
 
   if (recommendationId) {
@@ -77,7 +77,7 @@ export default async function NewQuotePage({
 
       // The original quote may itself have been created from a pricing
       // recommendation - carry that link (and its market range) forward so
-      // a duplicated quote keeps showing the same reminder/PDF note.
+      // a duplicated quote keeps showing the same in-form reminder.
       if (original.pricing_recommendation_id) {
         const { data: recommendation } = await supabase
           .from("pricing_recommendations")
@@ -103,7 +103,7 @@ export default async function NewQuotePage({
         <a href="/quotes" className="text-sm text-gray-500 underline">
           ← חזרה לרשימת ההצעות
         </a>
-        <h1 className="text-2xl font-bold mt-2">הצעת מחיר חדשה</h1>
+        <h1 className="text-2xl font-bold text-blue-950 mt-2">הצעת מחיר חדשה</h1>
       </div>
 
       <QuoteForm

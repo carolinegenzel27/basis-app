@@ -29,7 +29,7 @@ export function OnboardingForm() {
           name="business_name"
           type="text"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
       </div>
 
@@ -42,10 +42,10 @@ export function OnboardingForm() {
           name="profession"
           required
           defaultValue=""
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         >
           <option value="" disabled>
-            בחרי תחום
+            בחירת תחום
           </option>
           {PROFESSIONS.map((p) => (
             <option key={p.value} value={p.value}>
@@ -67,7 +67,7 @@ export function OnboardingForm() {
             min={0}
             max={80}
             required
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
           />
         </div>
         <div>
@@ -82,7 +82,7 @@ export function OnboardingForm() {
             max={500}
             required
             defaultValue={1}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
           />
         </div>
       </div>
@@ -102,16 +102,16 @@ export function OnboardingForm() {
           dir="ltr"
           placeholder="dana-driving"
           pattern="[a-z0-9-]+"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
         <p className="text-xs text-gray-500 mt-1">
-          רק אותיות אנגליות קטנות, מספרים, ומקף. זו הכתובת שתשלחי ללקוחות שלך.
+          רק אותיות אנגליות קטנות, מספרים, ומקף. זו הכתובת שנשלחת ללקוחות.
         </p>
       </div>
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
-      <SubmitButton>המשך לדשבורד</SubmitButton>
+      <SubmitButton>המשך למסך הבית</SubmitButton>
     </form>
   );
 }

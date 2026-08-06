@@ -33,11 +33,12 @@ export function ProfileContentForm({
         <textarea
           id="about_me"
           name="about_me"
+          dir="rtl"
           rows={3}
           maxLength={600}
           defaultValue={defaultAboutMe}
-          placeholder="כמה משפטים על מי שאת ומה מייחד אותך"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          placeholder="כמה משפטים על עצמך ומה מייחד אותך"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
       </div>
 
@@ -48,11 +49,12 @@ export function ProfileContentForm({
         <textarea
           id="experience_text"
           name="experience_text"
+          dir="rtl"
           rows={3}
           maxLength={600}
           defaultValue={defaultExperienceText}
           placeholder="ותק, הכשרות, הישגים בולטים"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
       </div>
 
@@ -63,11 +65,12 @@ export function ProfileContentForm({
         <textarea
           id="additional_info"
           name="additional_info"
+          dir="rtl"
           rows={3}
           maxLength={600}
           defaultValue={defaultAdditionalInfo}
           placeholder="שעות פעילות, אזור שירות, כל דבר אחר שחשוב שלקוחות ידעו"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
       </div>
 

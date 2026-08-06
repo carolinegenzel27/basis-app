@@ -33,10 +33,10 @@ export function PricingAdvisorForm({
             name="project_type"
             required
             defaultValue=""
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
           >
             <option value="" disabled>
-              בחרי סוג פרויקט
+              בחר את אחת מהאפשרויות הבאות
             </option>
             {options.map((opt) => (
               <option key={opt.project_type} value={opt.project_type}>
@@ -55,15 +55,15 @@ export function PricingAdvisorForm({
             <p className="text-sm text-gray-700">
               טווח מחיר מומלץ עבור &quot;{state.recommendation.label}&quot;:
             </p>
-            <p className="text-2xl font-bold text-slate-900 mt-1">
+            <p className="text-2xl font-bold text-blue-950 mt-1">
               {state.recommendation.min}-{state.recommendation.max} ₪
             </p>
           </div>
           <a
             href={`/quotes/new?recommendationId=${state.recommendation.id}`}
-            className="inline-block rounded-lg bg-slate-900 px-4 py-2 text-white text-sm font-medium hover:bg-slate-800"
+            className="inline-block rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium hover:bg-blue-900"
           >
-            צרי הצעת מחיר עם המחיר הזה
+            יצירת הצעת מחיר עם המחיר הזה
           </a>
         </div>
       )}

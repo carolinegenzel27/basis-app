@@ -42,10 +42,10 @@ export default async function QuotesPage() {
   return (
     <div className="max-w-2xl mx-auto p-8 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">הצעות מחיר</h1>
+        <h1 className="text-2xl font-bold text-blue-950">הצעות מחיר</h1>
         <a
           href="/quotes/new"
-          className="rounded-lg bg-slate-900 px-4 py-2 text-white text-sm font-medium hover:bg-slate-800"
+          className="rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium hover:bg-blue-900"
         >
           + הצעה חדשה
         </a>
@@ -72,10 +72,10 @@ export default async function QuotesPage() {
               {new Date(quote.created_at).toLocaleDateString("he-IL")}
             </p>
             <div className="flex items-center gap-4 pt-1 text-sm">
-              <a href={`/api/quotes/${quote.id}/pdf`} className="text-slate-900 underline">
+              <a href={`/api/quotes/${quote.id}/pdf`} className="text-blue-950 underline">
                 הורדת PDF
               </a>
-              <a href={`/quotes/new?duplicateFrom=${quote.id}`} className="text-slate-900 underline">
+              <a href={`/quotes/new?duplicateFrom=${quote.id}`} className="text-blue-950 underline">
                 שכפול
               </a>
               <form

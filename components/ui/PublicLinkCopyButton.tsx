@@ -1,21 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore, useState } from "react";
 
 // Uses window.location.origin (not an env var) so the link is always correct
 // for whatever domain the app is actually running on - localhost while
 // developing, the real domain once deployed - with no config needed either way.
-// Reading it inside useEffect (not directly during render) avoids a
-// server/client hydration mismatch - the server has no "window" to render
-// from, so the first client render intentionally matches that (relative
-// path), then swaps to the full URL right after mount.
+// useSyncExternalStore is React's built-in way to read a browser-only value
+// with different server/client snapshots and no hydration mismatch: the
+// server snapshot ("") renders the relative path, the client snapshot swaps
+// in the real origin right after mount. (Previously this used
+// setState-inside-useEffect, which worked but triggered a lint error for
+// causing an unnecessary extra render.)
+const emptySubscribe = () => () => {};
+function useOrigin() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => window.location.origin,
+    () => ""
+  );
+}
+
 export function PublicLinkCopyButton({ slug }: { slug: string }) {
   const [copied, setCopied] = useState(false);
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
+  const origin = useOrigin();
 
   const url = origin ? `${origin}/p/${slug}` : `/p/${slug}`;
 
@@ -32,14 +39,14 @@ export function PublicLinkCopyButton({ slug }: { slug: string }) {
         target="_blank"
         rel="noopener noreferrer"
         dir="ltr"
-        className="text-sm text-slate-900 underline truncate"
+        className="text-sm text-blue-950 underline truncate"
       >
         {url}
       </a>
       <button
         type="button"
         onClick={handleCopy}
-        className="text-xs text-slate-600 hover:text-slate-900 underline shrink-0"
+        className="text-xs text-slate-600 hover:text-blue-800 underline shrink-0"
       >
         {copied ? "הועתק!" : "העתק קישור"}
       </button>

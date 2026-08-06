@@ -13,40 +13,69 @@ Font.register({
   ],
 });
 
+// Brand blue (matches the app's blue-900/950 palette) instead of plain
+// slate/black - ties the PDF visually to the rest of the product and reads
+// more like an official letterhead than a plain text dump.
+const BRAND = "#1e3a8a";
+const BRAND_DARK = "#172554";
+const MUTED = "#64748b";
+
 const styles = StyleSheet.create({
-  page: { padding: 48, fontFamily: "NotoHebrew", fontSize: 12, color: "#1e293b" },
-  header: { marginBottom: 28, borderBottom: "2pt solid #0f172a", paddingBottom: 14 },
-  title: { fontSize: 22, fontWeight: 600, textAlign: "right" },
-  subtitle: { fontSize: 11, color: "#64748b", textAlign: "right", marginTop: 4 },
+  page: { padding: 0, fontFamily: "NotoHebrew", fontSize: 12, color: "#1e293b" },
+  content: { padding: 44 },
+  // Letterhead band - a filled color bar at the very top of the page gives
+  // the document an "official" feel instead of plain text on white.
+  letterhead: {
+    backgroundColor: BRAND_DARK,
+    paddingVertical: 10,
+    paddingHorizontal: 44,
+  },
+  letterheadText: { fontSize: 10, color: "#ffffff", opacity: 0.85 },
+  header: { marginBottom: 28, borderBottom: `2pt solid ${BRAND}`, paddingBottom: 14, marginTop: 20 },
+  title: { fontSize: 24, fontWeight: 600, textAlign: "right", color: BRAND_DARK },
+  subtitle: { fontSize: 11, color: MUTED, textAlign: "right", marginTop: 4 },
+  // Label + value line in the header ("מאת: X", "תאריך: Y") - same
+  // split-Text trick as labelGroup below, because "מאת:" in one Text node
+  // is exactly the Hebrew+ASCII-colon mix that renders corrupted.
+  subtitleRow: { flexDirection: "row-reverse", gap: 4, marginTop: 4 },
+  subtitleText: { fontSize: 11, color: MUTED },
   section: { marginBottom: 18 },
-  sectionTitle: { fontSize: 13, fontWeight: 600, textAlign: "right", marginBottom: 8 },
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: 600,
+    textAlign: "right",
+    marginBottom: 8,
+    color: BRAND_DARK,
+  },
   row: { flexDirection: "row-reverse", marginBottom: 6, gap: 4 },
   // "שם" and ":" are rendered as two separate Text nodes (see labelGroup
   // below) instead of one "שם:" string. A single Text mixing Hebrew letters
   // with an ASCII punctuation mark is the exact bug pattern that corrupted
   // "ש"ח" earlier - splitting them into pure-script pieces with zero gap
-  // between them sidesteps it entirely (verified by rendering, see the
-  // fix for the market-price note).
+  // between them sidesteps it entirely (verified by rendering).
   labelGroup: { flexDirection: "row-reverse" },
-  label: { color: "#64748b" },
+  label: { color: MUTED },
   priceBox: {
     marginTop: 10,
-    padding: 14,
-    backgroundColor: "#f1f5f9",
-    borderRadius: 4,
+    padding: 18,
+    backgroundColor: "#eff6ff",
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#bfdbfe",
     alignItems: "flex-end",
   },
-  priceLabel: { fontSize: 11, color: "#64748b", marginBottom: 4 },
-  priceValue: { fontSize: 22, fontWeight: 600 },
-  priceNote: { fontSize: 9, color: "#94a3b8", marginTop: 6 },
+  priceLabel: { fontSize: 11, color: BRAND, marginBottom: 4 },
+  priceValue: { fontSize: 26, fontWeight: 600, color: BRAND_DARK },
   footer: {
     position: "absolute",
     bottom: 32,
-    left: 48,
-    right: 48,
+    left: 44,
+    right: 44,
     justifyContent: "center",
     fontSize: 9,
     color: "#94a3b8",
+    borderTop: "0.5pt solid #e2e8f0",
+    paddingTop: 10,
   },
 });
 
@@ -75,10 +104,10 @@ export type QuotePdfData = {
   projectDescription: string | null;
   price: number;
   createdAt: string;
-  // Only set when this quote was created from a pricing-advisor
-  // recommendation (via pricing_recommendation_id) - lets us show the quote
-  // isn't an arbitrary number, it's grounded in market data.
-  marketRange: { min: number; max: number } | null;
+  // The date the PDF is actually generated/downloaded (not necessarily the
+  // same as createdAt, which is when the quote row was first saved) - shown
+  // prominently near the top so the client sees a current, real date.
+  currentDate: string;
 };
 
 export function QuoteDocument({ data }: { data: QuotePdfData }) {
@@ -90,44 +119,61 @@ export function QuoteDocument({ data }: { data: QuotePdfData }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={styles.header}>
-          <BidiText style={styles.title}>{title}</BidiText>
-          <BidiText style={styles.subtitle}>{`מאת: ${data.businessName}`}</BidiText>
+        {/* Letterhead band - solid brand-color bar across the very top of
+            the page, like a real letterhead, instead of the document just
+            starting with plain text on white. */}
+        <View style={styles.letterhead}>
+          <BidiText style={styles.letterheadText}>Basis</BidiText>
         </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>פרטי לקוח</Text>
-          <View style={styles.row}>
-            <View style={styles.labelGroup}>
-              <Text style={styles.label}>שם</Text>
-              <Text style={styles.label}>:</Text>
+        <View style={styles.content}>
+          <View style={styles.header}>
+            <BidiText style={styles.title}>{title}</BidiText>
+            <View style={styles.subtitleRow}>
+              <View style={styles.labelGroup}>
+                <Text style={styles.subtitleText}>מאת</Text>
+                <Text style={styles.subtitleText}>:</Text>
+              </View>
+              <BidiText style={styles.subtitleText}>{data.businessName}</BidiText>
             </View>
-            <BidiText>{data.clientName}</BidiText>
-          </View>
-          <View style={styles.row}>
-            <View style={styles.labelGroup}>
-              <Text style={styles.label}>אימייל</Text>
-              <Text style={styles.label}>:</Text>
+            <View style={styles.subtitleRow}>
+              <View style={styles.labelGroup}>
+                <Text style={styles.subtitleText}>תאריך</Text>
+                <Text style={styles.subtitleText}>:</Text>
+              </View>
+              <Text style={styles.subtitleText}>{formatDate(data.currentDate)}</Text>
             </View>
-            <Text>{data.clientEmail}</Text>
           </View>
-        </View>
 
-        {data.projectDescription && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>תיאור הפרויקט</Text>
-            <BidiText>{data.projectDescription}</BidiText>
+            <Text style={styles.sectionTitle}>פרטי לקוח</Text>
+            <View style={styles.row}>
+              <View style={styles.labelGroup}>
+                <Text style={styles.label}>שם</Text>
+                <Text style={styles.label}>:</Text>
+              </View>
+              <BidiText>{data.clientName}</BidiText>
+            </View>
+            <View style={styles.row}>
+              <View style={styles.labelGroup}>
+                <Text style={styles.label}>אימייל</Text>
+                <Text style={styles.label}>:</Text>
+              </View>
+              <Text>{data.clientEmail}</Text>
+            </View>
           </View>
-        )}
 
-        <View style={styles.priceBox}>
-          <Text style={styles.priceLabel}>מחיר מוצע</Text>
-          <Text style={styles.priceValue}>{`${formatPrice(data.price)} ש״ח`}</Text>
-          {data.marketRange && (
-            <BidiText style={styles.priceNote}>
-              {`המחיר מבוסס על טווח המחירים המומלץ בשוק: ${formatPrice(data.marketRange.min)}-${formatPrice(data.marketRange.max)} ש״ח`}
-            </BidiText>
+          {data.projectDescription && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>תיאור הפרויקט</Text>
+              <BidiText>{data.projectDescription}</BidiText>
+            </View>
           )}
+
+          <View style={styles.priceBox}>
+            <Text style={styles.priceLabel}>מחיר מוצע</Text>
+            <Text style={styles.priceValue}>{`${formatPrice(data.price)} ש״ח`}</Text>
+          </View>
         </View>
 
         <BidiText style={styles.footer}>

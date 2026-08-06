@@ -52,9 +52,9 @@ export default async function PricingAdvisorPage() {
   return (
     <div className="max-w-lg mx-auto p-8 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">יועץ תמחור</h1>
+        <h1 className="text-2xl font-bold text-blue-950">יועץ תמחור</h1>
         <p className="text-gray-600 mt-1">
-          בחרי סוג פרויקט וקבלי טווח מחיר מומלץ, מבוסס על נתוני שוק.
+          בחירת סוג פרויקט מניבה טווח מחיר מומלץ, מבוסס על נתוני שוק.
         </p>
       </div>
 
@@ -65,7 +65,7 @@ export default async function PricingAdvisorPage() {
 
       {history && history.length > 0 && (
         <div className="pt-6 border-t border-gray-200">
-          <h2 className="text-lg font-semibold mb-3">המלצות קודמות</h2>
+          <h2 className="text-lg font-semibold text-blue-950 mb-3">המלצות קודמות</h2>
           <ul className="space-y-2">
             {history.map((h) => (
               <li key={h.id} className="flex items-center justify-between text-sm text-gray-600">
@@ -74,9 +74,9 @@ export default async function PricingAdvisorPage() {
                 </span>
                 <a
                   href={`/quotes/new?recommendationId=${h.id}`}
-                  className="text-slate-900 underline text-xs shrink-0 ms-3"
+                  className="text-blue-950 underline text-xs shrink-0 ms-3"
                 >
-                  צרי הצעת מחיר
+                  יצירת הצעת מחיר
                 </a>
               </li>
             ))}

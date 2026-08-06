@@ -25,10 +25,14 @@ export async function GET(
   // RLS already limits this to quotes owned by the current user, but the
   // explicit business_profiles join also gives us the business name to
   // print on the PDF in one round trip.
+  // Note: the market-price range is intentionally never fetched/sent to the
+  // PDF here - the client receiving this document shouldn't see that the
+  // price is based on a market average (that lives only in the quote-creation
+  // form, for the business owner's own eyes). See QuoteForm.tsx for that.
   const { data: quote } = await supabase
     .from("quotes")
     .select(
-      "client_name, client_email, project_description, price, created_at, pricing_recommendation_id, document_title, business_profiles(business_name)"
+      "client_name, client_email, project_description, price, created_at, document_title, business_profiles(business_name)"
     )
     .eq("id", id)
     .maybeSingle();
@@ -41,25 +45,6 @@ export async function GET(
     (quote.business_profiles as unknown as { business_name: string } | null)
       ?.business_name ?? "Basis";
 
-  // Only quotes created straight from the pricing advisor carry this link -
-  // manually-entered quotes have no market data to cite, so marketRange
-  // stays null and the PDF simply omits the note.
-  let marketRange: { min: number; max: number } | null = null;
-  if (quote.pricing_recommendation_id) {
-    const { data: recommendation } = await supabase
-      .from("pricing_recommendations")
-      .select("recommended_min, recommended_max")
-      .eq("id", quote.pricing_recommendation_id)
-      .maybeSingle();
-
-    if (recommendation) {
-      marketRange = {
-        min: Number(recommendation.recommended_min),
-        max: Number(recommendation.recommended_max),
-      };
-    }
-  }
-
   const buffer = await renderToBuffer(
     QuoteDocument({
       data: {
@@ -70,7 +55,9 @@ export async function GET(
         projectDescription: quote.project_description,
         price: Number(quote.price),
         createdAt: quote.created_at,
-        marketRange,
+        // Computed at request time, not read from the DB - every download
+        // of the PDF shows today's real date, not the original save date.
+        currentDate: new Date().toISOString(),
       },
     })
   );

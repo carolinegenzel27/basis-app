@@ -23,7 +23,7 @@ export function BrandingQuestionnaire({
   return (
     <form action={formAction} className="space-y-4">
       <p className="text-xs text-gray-500 -mt-2">
-        עני/ה בביטוי קצר לכל שאלה, לא במשפט שלם - זה מה שהופך את התוצאה
+        יש לענות בביטוי קצר לכל שאלה, לא במשפט שלם - זה מה שהופך את התוצאה
         לקריאה וברורה.
       </p>
       {fields.map((field) => (
@@ -39,7 +39,7 @@ export function BrandingQuestionnaire({
             maxLength={60}
             placeholder={field.placeholder}
             defaultValue={existingAnswers?.[field.name] ?? ""}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900 placeholder:text-gray-400"
+            className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700 placeholder:text-gray-400"
           />
         </div>
       ))}

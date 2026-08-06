@@ -36,6 +36,16 @@ type PublicDocument = {
   file_url: string;
 };
 
+// business_profile_documents doesn't store a content-type column - only
+// PDF/JPG/PNG are ever accepted at upload time (see
+// lib/validations/profile-media.ts's ALLOWED_DOCUMENT_TYPES), so the file
+// extension alone is enough to tell an image apart from a document here.
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
+function isImageFile(fileName: string): boolean {
+  const ext = fileName.split(".").pop()?.toLowerCase();
+  return !!ext && IMAGE_EXTENSIONS.includes(ext);
+}
+
 async function getProfile(slug: string): Promise<PublicProfile | null> {
   const supabase = await createClient();
   const { data } = await supabase
@@ -89,11 +99,16 @@ export default async function PublicBusinessPage({
   }
 
   const documents = await getDocuments(profile.business_profile_id);
+  // Split into images (shown inline, as a small gallery) vs everything else
+  // (PDFs etc, shown as a plain link to open/download) - same list of
+  // uploaded files, just rendered according to what they actually are.
+  const imageDocuments = documents.filter((doc) => isImageFile(doc.file_name));
+  const otherDocuments = documents.filter((doc) => !isImageFile(doc.file_name));
   const professionLabel =
     PROFESSION_LABELS[profile.profession] ?? profile.profession;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-blue-50">
       <div className="max-w-2xl mx-auto px-6 py-16">
         <div className="rounded-2xl bg-white border border-gray-200 shadow-sm p-10 text-center space-y-6">
           {profile.photo_url && (
@@ -109,7 +124,7 @@ export default async function PublicBusinessPage({
             <p className="text-sm font-medium text-slate-500">
               {professionLabel}
             </p>
-            <h1 className="text-3xl font-bold text-slate-900 mt-1">
+            <h1 className="text-3xl font-bold text-blue-950 mt-1">
               {profile.business_name}
             </h1>
           </div>
@@ -155,17 +170,41 @@ export default async function PublicBusinessPage({
             </div>
           )}
 
-          {documents.length > 0 && (
+          {imageDocuments.length > 0 && (
+            <div className="pt-6 border-t border-gray-100 text-right">
+              <h2 className="text-sm font-semibold text-slate-500 mb-2">תמונות</h2>
+              <div className="grid grid-cols-3 gap-2">
+                {imageDocuments.map((doc) => (
+                  <a
+                    key={doc.id}
+                    href={doc.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block aspect-square rounded-lg overflow-hidden border border-gray-200"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={doc.file_url}
+                      alt={doc.file_name}
+                      className="w-full h-full object-cover"
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {otherDocuments.length > 0 && (
             <div className="pt-6 border-t border-gray-100 text-right">
               <h2 className="text-sm font-semibold text-slate-500 mb-2">מסמכים</h2>
               <ul className="space-y-1">
-                {documents.map((doc) => (
+                {otherDocuments.map((doc) => (
                   <li key={doc.id}>
                     <a
                       href={doc.file_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-slate-900 underline text-sm"
+                      className="text-blue-950 underline text-sm"
                     >
                       {doc.file_name}
                     </a>

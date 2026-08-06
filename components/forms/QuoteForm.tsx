@@ -27,7 +27,7 @@ export function QuoteForm({
     return (
       <div className="rounded-lg border border-green-200 bg-green-50 p-4">
         <p className="text-sm text-green-700">הצעת המחיר נשמרה!</p>
-        <a href="/quotes" className="text-sm text-slate-900 underline mt-2 inline-block">
+        <a href="/quotes" className="text-sm text-blue-950 underline mt-2 inline-block">
           חזרה לרשימת ההצעות
         </a>
       </div>
@@ -52,10 +52,10 @@ export function QuoteForm({
           maxLength={60}
           placeholder="הצעת מחיר"
           defaultValue={defaultDocumentTitle}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
         <p className="text-xs text-gray-400 mt-1">
-          אם לא תמלאי, ה-PDF יוצג עם הכותרת "הצעת מחיר"
+          בלי מילוי, ה-PDF יוצג עם הכותרת &quot;הצעת מחיר&quot;
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export function QuoteForm({
           name="client_name"
           type="text"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
       </div>
 
@@ -81,7 +81,7 @@ export function QuoteForm({
           name="client_email"
           type="email"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
       </div>
 
@@ -95,7 +95,7 @@ export function QuoteForm({
           rows={3}
           maxLength={300}
           defaultValue={defaultProjectDescription}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
       </div>
 
@@ -111,7 +111,7 @@ export function QuoteForm({
           step="1"
           required
           defaultValue={defaultPrice}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-slate-900"
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
         />
         {(defaultPrice !== undefined || defaultProjectDescription) && (
           <p className="text-xs text-gray-400 mt-1">מולא אוטומטית - אפשר לערוך</p>
@@ -121,8 +121,7 @@ export function QuoteForm({
             בהתבסס על נתוני השוק, אנחנו ממליצים לגבות בין{" "}
             {marketRange.min.toLocaleString("he-IL")}-
             {marketRange.max.toLocaleString("he-IL")} ₪ עבור שירות בודד מהסוג
-            הזה - גם אם תשני את הסכום, ההמלצה הזו תישאר מוצגת כאן כדי שתזכרי
-            אותה.
+            הזה - גם אם הסכום ישתנה, ההמלצה הזו תישאר מוצגת כאן לתזכורת.
           </p>
         )}
       </div>

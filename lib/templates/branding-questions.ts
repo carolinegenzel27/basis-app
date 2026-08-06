@@ -38,7 +38,7 @@ const QUESTIONS_BY_PROFESSION: Record<Profession, QuestionField[]> = {
     },
     {
       name: "cta",
-      label: "מה הפעולה שאת רוצה שהלקוח יעשה?",
+      label: "מה הפעולה שחשוב שהלקוח יעשה?",
       placeholder: "לקבוע שיעור ניסיון",
     },
   ],
@@ -70,7 +70,7 @@ const QUESTIONS_BY_PROFESSION: Record<Profession, QuestionField[]> = {
     },
     {
       name: "cta",
-      label: "מה הפעולה שאת רוצה שהלקוח יעשה?",
+      label: "מה הפעולה שחשוב שהלקוח יעשה?",
       placeholder: "לקבוע פגישת ייעוץ ראשונה",
     },
   ],
@@ -102,7 +102,7 @@ const QUESTIONS_BY_PROFESSION: Record<Profession, QuestionField[]> = {
     },
     {
       name: "cta",
-      label: "מה הפעולה שאת רוצה שהלקוח יעשה?",
+      label: "מה הפעולה שחשוב שהלקוח יעשה?",
       placeholder: "לתאם שיחת תכנון תפריט",
     },
   ],

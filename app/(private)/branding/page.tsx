@@ -48,7 +48,7 @@ export default async function BrandingPage() {
   return (
     <div className="max-w-2xl mx-auto p-8 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">מיתוג ומיצוב</h1>
+        <h1 className="text-2xl font-bold text-blue-950">מיתוג ומיצוב</h1>
         <p className="text-gray-600 mt-1">
           ענו על השאלות, ונבנה לכם חומרים שיווקיים מוכנים.
         </p>
@@ -61,7 +61,7 @@ export default async function BrandingPage() {
 
       {branding?.uvp_statement && (
         <div className="pt-6 border-t border-gray-200">
-          <h2 className="text-lg font-semibold mb-4">החומרים שלך</h2>
+          <h2 className="text-lg font-semibold text-blue-950 mb-4">החומרים שלך</h2>
           <MarketingContentDisplay
             content={{
               uvp_statement: branding.uvp_statement,

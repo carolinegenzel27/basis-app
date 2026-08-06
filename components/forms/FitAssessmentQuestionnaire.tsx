@@ -15,13 +15,13 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
   if (state.success) {
     return (
       <div className="rounded-lg border border-green-200 bg-green-50 p-6 space-y-4">
-        <h2 className="text-lg font-semibold">ההמלצה שלנו</h2>
+        <h2 className="text-lg font-semibold text-blue-950">ההמלצה שלנו</h2>
         <p className="text-gray-700">{state.resultMessage}</p>
         <a
           href="/dashboard"
-          className="inline-block rounded-lg bg-slate-900 px-4 py-2 text-white text-sm font-medium hover:bg-slate-800"
+          className="inline-block rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium hover:bg-blue-900"
         >
-          המשך לדשבורד
+          המשך למסך הבית
         </a>
       </div>
     );
@@ -52,7 +52,7 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
             onClick={() => selectAnswer(opt.value)}
             className={`w-full text-right rounded-lg border px-4 py-2 transition ${
               currentAnswer === opt.value
-                ? "border-slate-900 bg-slate-900 text-white"
+                ? "border-blue-800 bg-blue-800 text-white"
                 : "border-gray-300 hover:bg-gray-50"
             }`}
           >
@@ -76,7 +76,7 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
             type="button"
             disabled={currentAnswer === 0}
             onClick={() => setStep((s) => s + 1)}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             הבא
           </button>
@@ -84,7 +84,7 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
           <button
             type="button"
             disabled
-            className="rounded-lg bg-slate-900 px-4 py-2 text-white text-sm font-medium opacity-50 cursor-not-allowed"
+            className="rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium opacity-50 cursor-not-allowed"
           >
             קבלת המלצה
           </button>

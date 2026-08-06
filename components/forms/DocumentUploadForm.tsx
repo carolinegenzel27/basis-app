@@ -24,7 +24,7 @@ export function DocumentUploadForm({
         name="document"
         accept="application/pdf,image/jpeg,image/png"
         required
-        className="block w-full text-sm text-gray-600 file:me-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-2 file:text-white file:text-sm hover:file:bg-slate-800"
+        className="block w-full text-sm text-gray-600 file:me-3 file:rounded-lg file:border-0 file:bg-blue-800 file:px-3 file:py-2 file:text-white file:text-sm hover:file:bg-blue-900"
       />
       <p className="text-xs text-gray-400">PDF, JPG או PNG - עד 5MB לקובץ</p>
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}

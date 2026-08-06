@@ -36,7 +36,7 @@ export function MarketingContentDisplay({ content }: { content: Content }) {
               <h3 className="font-medium text-sm">{LABELS[key]}</h3>
               <button
                 onClick={() => handleCopy(key, text)}
-                className="text-xs text-slate-600 hover:text-slate-900 underline"
+                className="text-xs text-slate-600 hover:text-blue-800 underline"
               >
                 {copied === key ? "הועתק!" : "העתק"}
               </button>

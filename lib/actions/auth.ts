@@ -23,13 +23,26 @@ export async function signUpAction(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
   });
 
   if (error) {
     return { success: false, error: error.message };
+  }
+
+  // signUp can "succeed" without creating a session - e.g. if email
+  // confirmation is enabled in Supabase, or the email already belongs to an
+  // existing account (Supabase deliberately doesn't reveal which). Without
+  // this check, the redirect to /onboarding would bounce straight back to
+  // /login with no explanation, which looks like a broken signup button.
+  if (!data.session) {
+    return {
+      success: false,
+      error:
+        "לא נוצרה התחברות אוטומטית. אם זה אימייל חדש - ייתכן שנשלח אליו מייל אישור. אם כבר יש חשבון עם האימייל הזה - יש להתחבר דרך מסך ההתחברות.",
+    };
   }
 
   redirect("/onboarding");

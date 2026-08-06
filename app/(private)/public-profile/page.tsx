@@ -59,9 +59,9 @@ export default async function PublicProfilePage() {
     <div className="max-w-2xl mx-auto p-8 space-y-8">
       <div>
         <a href="/dashboard" className="text-sm text-gray-500 underline">
-          ← חזרה לדשבורד
+          ← חזרה למסך הבית
         </a>
-        <h1 className="text-2xl font-bold mt-2">הכנת עמוד ציבורי</h1>
+        <h1 className="text-2xl font-bold text-blue-950 mt-2">הכנת עמוד ציבורי</h1>
         <p className="text-gray-600 mt-1">
           כל מה שממלאים כאן מוצג בעמוד הציבורי שלך -{" "}
           <a
@@ -78,7 +78,7 @@ export default async function PublicProfilePage() {
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">תמונה</h2>
+        <h2 className="text-lg font-semibold text-blue-950">תמונה</h2>
         <PhotoUploadForm
           businessProfileId={businessProfile.id}
           currentPhotoUrl={businessProfile.photo_url}
@@ -86,7 +86,7 @@ export default async function PublicProfilePage() {
       </section>
 
       <section className="space-y-3 pt-6 border-t border-gray-200">
-        <h2 className="text-lg font-semibold">קצת עליי, ניסיון, ופרטים נוספים</h2>
+        <h2 className="text-lg font-semibold text-blue-950">קצת עליי, ניסיון, ופרטים נוספים</h2>
         <ProfileContentForm
           businessProfileId={businessProfile.id}
           defaultAboutMe={businessProfile.about_me ?? ""}
@@ -96,7 +96,7 @@ export default async function PublicProfilePage() {
       </section>
 
       <section className="space-y-3 pt-6 border-t border-gray-200">
-        <h2 className="text-lg font-semibold">מסמכים</h2>
+        <h2 className="text-lg font-semibold text-blue-950">מסמכים</h2>
         <p className="text-sm text-gray-500 -mt-1">
           תעודות, תפריט, מחירון - כל קובץ שיעזור ללקוח פוטנציאלי להכיר אותך.
         </p>
@@ -112,7 +112,7 @@ export default async function PublicProfilePage() {
                   href={doc.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-slate-900 underline truncate"
+                  className="text-sm text-blue-950 underline truncate"
                 >
                   {doc.file_name}
                 </a>
