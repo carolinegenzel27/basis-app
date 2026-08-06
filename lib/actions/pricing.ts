@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 export type ActionState = {
   success: boolean;
   error?: string;
-  recommendation?: { min: number; max: number; label: string };
+  recommendation?: { id: string; min: number; max: number; label: string };
 };
 
 export async function getPricingRecommendation(
@@ -60,7 +60,7 @@ export async function getPricingRecommendation(
   // exact project type already has the same price range.
   const { data: lastRecommendation } = await supabase
     .from("pricing_recommendations")
-    .select("recommended_min, recommended_max")
+    .select("id, recommended_min, recommended_max")
     .eq("business_profile_id", businessProfile.id)
     .eq("project_type", parsed.data.project_type)
     .order("created_at", { ascending: false })
@@ -72,26 +72,34 @@ export async function getPricingRecommendation(
     Number(lastRecommendation.recommended_min) === Number(pricingRow.price_min) &&
     Number(lastRecommendation.recommended_max) === Number(pricingRow.price_max);
 
+  let recommendationId = lastRecommendation?.id;
+
   if (!isSameAsLast) {
-    const { error } = await supabase.from("pricing_recommendations").insert({
-      business_profile_id: businessProfile.id,
-      profession: businessProfile.profession,
-      project_type: parsed.data.project_type,
-      project_type_label: pricingRow.project_type_label,
-      recommended_min: pricingRow.price_min,
-      recommended_max: pricingRow.price_max,
-    });
+    const { data: inserted, error } = await supabase
+      .from("pricing_recommendations")
+      .insert({
+        business_profile_id: businessProfile.id,
+        profession: businessProfile.profession,
+        project_type: parsed.data.project_type,
+        project_type_label: pricingRow.project_type_label,
+        recommended_min: pricingRow.price_min,
+        recommended_max: pricingRow.price_max,
+      })
+      .select("id")
+      .single();
 
     if (error) {
       return { success: false, error: error.message };
     }
 
+    recommendationId = inserted.id;
     revalidatePath("/pricing-advisor");
   }
 
   return {
     success: true,
     recommendation: {
+      id: recommendationId!,
       min: pricingRow.price_min,
       max: pricingRow.price_max,
       label: pricingRow.project_type_label,

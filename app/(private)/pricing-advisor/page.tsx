@@ -44,7 +44,7 @@ export default async function PricingAdvisorPage() {
 
   const { data: history } = await supabase
     .from("pricing_recommendations")
-    .select("project_type_label, recommended_min, recommended_max, created_at")
+    .select("id, project_type_label, recommended_min, recommended_max, created_at")
     .eq("business_profile_id", businessProfile.id)
     .order("created_at", { ascending: false })
     .limit(5);
@@ -67,9 +67,17 @@ export default async function PricingAdvisorPage() {
         <div className="pt-6 border-t border-gray-200">
           <h2 className="text-lg font-semibold mb-3">המלצות קודמות</h2>
           <ul className="space-y-2">
-            {history.map((h, i) => (
-              <li key={i} className="text-sm text-gray-600">
-                {h.project_type_label}: {h.recommended_min}-{h.recommended_max} ₪
+            {history.map((h) => (
+              <li key={h.id} className="flex items-center justify-between text-sm text-gray-600">
+                <span>
+                  {h.project_type_label}: {h.recommended_min}-{h.recommended_max} ₪
+                </span>
+                <a
+                  href={`/quotes/new?recommendationId=${h.id}`}
+                  className="text-slate-900 underline text-xs shrink-0 ms-3"
+                >
+                  צרי הצעת מחיר
+                </a>
               </li>
             ))}
           </ul>
