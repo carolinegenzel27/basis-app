@@ -1,45 +1,64 @@
 # Basis
 
-Basis is a leverage platform for small business owners and freelancers -
-driving instructors, dietitians, and private chefs. It takes a small amount
-of input from the owner (a short questionnaire, filled once) and turns it
-into professional output: marketing content, a data-backed pricing
-recommendation, price-quote PDFs for clients, and a public business page
-that can be shared with anyone.
+פרויקט גמר בקורס טכנולוגיות אינטרנט (Fullstack) - Caroline Genzel
 
-**No external API dependency**: marketing content is generated from fixed
-templates, pricing recommendations come from a pre-loaded reference table,
-and PDFs are rendered on the server - no AI service or third-party API is
-called at runtime. This is a deliberate architecture choice: the app is
-deterministic, fast, free to run, and can't go down because a third-party
-service did.
+**האתר החי:** [basis-app-sigma.vercel.app](https://basis-app-sigma.vercel.app)
 
-## Tech stack
+## מה זה Basis
+
+Basis היא פלטפורמת מינוף (leverage) לבעלי עסקים קטנים ועצמאים - מורים
+לנהיגה, דיאטניות, ושפים פרטיים. בעל עסק קטן בדרך כלל טוב מאוד במקצוע שלו,
+אבל חלש בשיווק, בתמחור, ובניירת מקצועית. האפליקציה לוקחת ממנו קלט מינימלי
+(שאלון קצר, שממולא פעם אחת) והופכת אותו לתוצרים מקצועיים: תוכן שיווקי,
+המלצת מחיר מבוססת נתוני שוק, הצעות מחיר כקובץ PDF, ועמוד עסקי ציבורי
+שאפשר לשלוח ללקוחות.
+
+**עיקרון ארכיטקטוני מרכזי - אפס תלות ב-API חיצוני:** התוכן השיווקי נוצר
+מתבניות קבועות, המלצות התמחור מגיעות מטבלת נתונים שהוזנה מראש, וקובצי
+ה-PDF נוצרים בצד השרת - בלי שום קריאה לשירות AI או API של צד שלישי בזמן
+ריצה. זו החלטה מכוונת: האפליקציה דטרמיניסטית, מהירה, חינמית להפעלה, ולא
+יכולה "ליפול" בגלל ששירות חיצוני נפל.
+
+## תכונות עיקריות
+
+- הרשמה והתחברות מאובטחות (Supabase Auth)
+- שאלון onboarding ליצירת פרופיל עסקי, כולל כתובת ציבורית ייחודית (slug)
+- שאלון התאמה קצר שממליץ אם להתמקד ביועץ התמחור, במיתוג, או בשניהם
+- שאלון מיתוג שמייצר אוטומטית 4 תוצרי תוכן שיווקי (הצהרת ערך, טקסט לאתר,
+  טקסט ל-LinkedIn, פיץ' מכירה)
+- יועץ תמחור מבוסס נתוני שוק אמיתיים לפי תחום עיסוק וסוג פרויקט
+- יצירת הצעות מחיר והפקתן כקובץ PDF מקצועי, כולל תמיכה נכונה בעברית
+- עמוד עסקי ציבורי (`/p/[slug]`) עם תמונה, טקסטים חופשיים, ומסמכים
+  להורדה - נגיש בלי צורך בהתחברות
+
+## סטאק טכנולוגי
 
 - **Next.js 16** (App Router) + **React 19** + **TypeScript**
-- **Supabase** - Postgres database, Auth, and file Storage in one project
+- **Supabase** - מסד נתונים (Postgres), Auth, ואחסון קבצים בפרויקט אחד
 - **Tailwind CSS v4**
-- **Zod** - server-side validation on every write
-- **@react-pdf/renderer** - server-side PDF generation (quotes)
-- **Vitest** - unit tests (see `TESTING.md`)
-- **Vercel** - hosting/deployment
+- **Zod** - ולידציה בצד השרת בכל פעולת כתיבה
+- **@react-pdf/renderer** - הפקת PDF בצד השרת (הצעות מחיר)
+- **Vitest** - בדיקות יחידה (ראו `TESTING.md`)
+- **Vercel** - אירוח ופריסה
 
-## Prerequisites
+## דרישות מקדימות
 
-- Node.js 20+ and npm
-- A free [Supabase](https://supabase.com) project
+- Node.js 20 ומעלה, ו-npm
+- פרויקט [Supabase](https://supabase.com) (יש תוכנית חינמית)
 
-## 1. Install dependencies
+## הרצה מקומית
+
+### 1. התקנת תלויות
 
 ```bash
 npm install
 ```
 
-## 2. Set up Supabase
+### 2. הגדרת Supabase
 
-1. Create a new project at [supabase.com](https://supabase.com).
-2. Open **SQL Editor** in the Supabase dashboard and run the following
-   files, **in this exact order** (each one builds on the last):
+1. יוצרים פרויקט חדש ב-[supabase.com](https://supabase.com).
+2. בדשבורד של Supabase, תחת **SQL Editor**, מריצים את הקבצים הבאים,
+   **בסדר הזה בדיוק** (כל קובץ נשען על הקודם לו):
 
    ```
    supabase/schema.sql
@@ -51,16 +70,16 @@ npm install
    supabase/update_pricing_real_data.sql
    ```
 
-3. Go to **Settings → API** and copy the **Project URL**, the **anon
-   public** key, and the **service_role** key (keep this one secret).
+3. תחת **Settings → API**, מעתיקים את ה-**Project URL**, את מפתח ה-**anon
+   public**, ואת מפתח ה-**service_role** (סודי - לא לחשוף).
 
-## 3. Configure environment variables
+### 3. הגדרת משתני סביבה
 
 ```bash
 cp .env.local.example .env.local
 ```
 
-Fill in the three values from step 2:
+וממלאים את שלושת הערכים משלב 2:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=
@@ -68,81 +87,85 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 ```
 
-`.env.local` is already git-ignored - never commit real keys.
+הקובץ `.env.local` כבר מוגדר ב-`.gitignore` - אסור לשמור בו ערכים אמיתיים
+ולהעלות אותו ל-Git.
 
-## 4. Run the app locally
+### 4. הרצת האפליקציה
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Create an account
-through the signup page to try the full flow: onboarding → fit assessment →
-dashboard → pricing advisor / branding / quotes / public profile.
+פותחים [http://localhost:3000](http://localhost:3000). כדי לנסות את
+התהליך המלא: נרשמים דרך עמוד ההרשמה, וממשיכים דרך onboarding → שאלון
+התאמה → דשבורד → יועץ תמחור / מיתוג / הצעות מחיר / עמוד ציבורי.
 
-## Running tests
+## הרצת בדיקות
 
 ```bash
-npm test          # run once
-npm run test:watch  # watch mode
+npm test           # הרצה חד-פעמית
+npm run test:watch   # מצב watch בזמן פיתוח
 ```
 
-See `TESTING.md` for what's covered and why.
+לפירוט מלא של מה נבדק, למה, ומה בכוונה לא נבדק - ראו `TESTING.md`,
+ובמפורט יותר במסמך "אפיון בדיקות" המצורף בנפרד.
 
-## Linting
+## Lint
 
 ```bash
 npm run lint
 ```
 
-## Deploying (Vercel)
+## פריסה (Vercel)
 
-1. Push the repo to GitHub, then import it as a New Project in
+1. דוחפים את הקוד ל-GitHub, ואז מייבאים אותו כ-New Project ב-
    [Vercel](https://vercel.com).
-2. Add the same three environment variables from step 3 in the Vercel
-   project's **Settings → Environment Variables**.
-3. Deploy. Vercel builds and redeploys automatically on every push.
-4. **Critical last step**: in Supabase, go to **Authentication → URL
-   Configuration** and set:
-   - **Site URL** to your production Vercel domain
-     (`https://your-app.vercel.app`)
-   - **Redirect URLs** to the same domain with `/**` appended
+2. מוסיפים את אותם שלושה משתני סביבה משלב 3 תחת **Settings →
+   Environment Variables** בפרויקט ב-Vercel.
+3. מפעילים דיפלוי - Vercel בונה ופורס מחדש אוטומטית בכל push.
+4. **שלב אחרון וקריטי:** ב-Supabase, תחת **Authentication → URL
+   Configuration**, מגדירים:
+   - **Site URL** - הדומיין האמיתי של Vercel (`https://the-app.vercel.app`)
+   - **Redirect URLs** - אותו דומיין עם `/**` בסוף
 
-   Without this step, signup/login on the live deployed site will not work
-   - Supabase Auth will reject the redirect because it doesn't recognize
-     the domain yet.
+   בלי השלב הזה, הרשמה/התחברות באתר החי פשוט לא יעבדו - Supabase Auth
+   ידחה את ההפניה כי הוא לא מזהה את הדומיין.
 
-## Project structure
+## מבנה הפרויקט
 
 ```
 app/
-  (public)/       pages that don't require login: landing, login, signup,
-                   and the public /p/[slug] business page
-  (private)/      pages behind auth: onboarding, fit-assessment, dashboard,
+  (public)/       עמודים שלא דורשים התחברות: נחיתה, כניסה, הרשמה,
+                   והעמוד העסקי הציבורי /p/[slug]
+  (private)/      עמודים מוגנים: onboarding, fit-assessment, dashboard,
                    branding, pricing-advisor, quotes, public-profile
-  api/quotes/[id]/pdf/  the one API route - renders and returns a quote PDF
+  api/quotes/[id]/pdf/  ה-API Route היחיד - מפיק ומחזיר קובץ PDF
 components/
-  forms/          all form components (Client Components)
-  ui/             small reusable UI pieces
+  forms/          כל רכיבי הטפסים (Client Components)
+  ui/             רכיבי UI קטנים לשימוש חוזר
   layout/         Navbar
 lib/
-  actions/        Server Actions - all writes go through these
-  validations/     Zod schemas - the same ones used client- and server-side
-  templates/       branding questions + the rule-based content generator
-  fit-assessment/  quiz questions + scoring logic
-  pdf/             the quote PDF document + the Hebrew/bidi text fix
-  supabase/        client creation (browser, server, admin)
+  actions/        Server Actions - כל פעולת כתיבה עוברת דרכן
+  validations/     סכמות Zod - אותן הסכמות בצד הלקוח ובצד השרת
+  templates/       שאלות המיתוג ומנוע התוכן מבוסס-הכללים
+  fit-assessment/  שאלות השאלון ולוגיקת הניקוד
+  pdf/             מסמך ה-PDF ותיקון הכיווניות (bidi) בעברית
+  supabase/        יצירת הקליינטים (דפדפן, שרת, admin)
 supabase/
-  schema.sql and migration files - run manually in the Supabase SQL Editor
-proxy.ts           runs before every request; refreshes the auth session
-                    cookie (the Next.js 16 equivalent of middleware.ts)
+  schema.sql וקבצי מיגרציה - מורצים ידנית ב-SQL Editor של Supabase
+proxy.ts           רץ לפני כל בקשה - מרענן את עוגיית ההתחברות
+                    (המקבילה ב-Next.js 16 ל-middleware.ts)
 ```
 
-## Further reading
+## מסמכים נלווים
 
-- `TESTING.md` - what's unit-tested and why, and what's intentionally out
-  of scope
-- `Basis_מסמך_אבטחה.docx` - security architecture: auth, RLS policies,
-  file upload validation, secrets handling (supplied separately)
-- `Basis_מסמך_סקיילביליות.docx` - current scale bottlenecks and the
-  concrete growth path (supplied separately)
+- `TESTING.md` - מה נבדק אוטומטית, למה, ומה בכוונה נשאר מחוץ להיקף
+- מסמך אפיון בדיקות (`Basis_מסמך_אפיון_בדיקות.docx`) - תוכנית בדיקות
+  מלאה: תכונות מרכזיות, קלטים לא תקינים, תהליכים עסקיים, הרשאות, מסד
+  הנתונים, מקרי קצה, ו-UI
+- מסמך קוד הבדיקות (`Basis_קוד_הבדיקות.docx`) - קוד המקור המלא של
+  בדיקות היחידה
+- מסמך אבטחה (`Basis_מסמך_אבטחה.docx`) - שכבות ההגנה, RLS, ולידציה,
+  אבטחת קבצים, וניהול סודות
+- מסמך סקיילביליות (`Basis_מסמך_סקיילביליות.docx`) - צווארי בקבוק
+  קיימים ומסלול צמיחה

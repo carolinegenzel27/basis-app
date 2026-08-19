@@ -94,6 +94,12 @@ describe("businessProfileSchema", () => {
   it("rejects team_size of 0 (minimum is 1)", () => {
     expect(businessProfileSchema.safeParse({ ...valid, team_size: 0 }).success).toBe(false);
   });
+
+  it("rejects an empty business_name (required field left blank)", () => {
+    expect(businessProfileSchema.safeParse({ ...valid, business_name: "" }).success).toBe(
+      false
+    );
+  });
 });
 
 describe("quoteSchema", () => {
@@ -135,6 +141,10 @@ describe("quoteSchema", () => {
     expect(quoteSchema.safeParse({ ...valid, client_email: "not-an-email" }).success).toBe(
       false
     );
+  });
+
+  it("rejects an empty client_name (required field left blank)", () => {
+    expect(quoteSchema.safeParse({ ...valid, client_name: "" }).success).toBe(false);
   });
 });
 

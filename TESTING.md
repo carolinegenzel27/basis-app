@@ -34,7 +34,7 @@ npm run test:watch  # watch mode while developing
 | `lib/templates/branding-templates.test.ts` | `generateMarketingContent` - confirms all 6 answers actually appear in the 4 generated texts | This is the "no external AI" content engine. A template typo that drops a field is invisible until a real user notices their own answer missing from their marketing copy. |
 | `lib/pdf/bidi-text.test.ts` | `splitBidiRuns` - the fix for a real, previously-shipped Hebrew/PDF rendering bug (mixed Hebrew + digits/punctuation corrupting inside `@react-pdf/renderer`) | This is a regression test for a bug that already happened once in this project. Locking in the exact split behavior (Hebrew run / digit run / punctuation run) means it can't silently break again during a refactor. |
 
-**45 tests total, across 4 files, all passing** (`npm test`).
+**47 tests total, across 4 files, all passing** (`npm test`).
 
 ## What is deliberately NOT covered in this pass, and why
 
