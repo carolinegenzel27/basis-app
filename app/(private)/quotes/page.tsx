@@ -7,7 +7,24 @@ import { deleteQuote } from "@/lib/actions/quotes";
 // fallback title string.
 const DEFAULT_QUOTE_TITLE = "הצעת מחיר";
 
-export default async function QuotesPage() {
+// Pagination - see Basis_מסמך_סקיילביליות.docx section 5. Page-based via a
+// URL search param (?page=2), which is the idiomatic Next.js App Router
+// pattern for a Server Component: no client-side state, no extra Server
+// Action, the URL itself is the source of truth and is shareable/bookmarkable.
+const PAGE_SIZE = 10;
+
+export default async function QuotesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ page?: string }>;
+}) {
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  // Ask for one extra row past the page size - if it comes back, there's a
+  // next page. Avoids a separate COUNT(*) query just to know that.
+  const to = from + PAGE_SIZE;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -33,11 +50,15 @@ export default async function QuotesPage() {
     redirect("/fit-assessment");
   }
 
-  const { data: quotes } = await supabase
+  const { data: quotesPageRows } = await supabase
     .from("quotes")
     .select("id, client_name, project_description, price, created_at, document_title")
     .eq("business_profile_id", businessProfile.id)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  const hasNextPage = (quotesPageRows?.length ?? 0) > PAGE_SIZE;
+  const quotes = (quotesPageRows ?? []).slice(0, PAGE_SIZE);
 
   return (
     <div className="max-w-2xl mx-auto p-8 space-y-6">
@@ -51,7 +72,7 @@ export default async function QuotesPage() {
         </a>
       </div>
 
-      {(!quotes || quotes.length === 0) && (
+      {page === 1 && (!quotes || quotes.length === 0) && (
         <p className="text-gray-500 text-sm">עדיין אין הצעות מחיר. אפשר להתחיל ליצור הצעה חדשה.</p>
       )}
 
@@ -92,6 +113,26 @@ export default async function QuotesPage() {
           </li>
         ))}
       </ul>
+
+      {(page > 1 || hasNextPage) && (
+        <div className="flex items-center justify-between pt-2 text-sm">
+          {page > 1 ? (
+            <a href={`/quotes?page=${page - 1}`} className="text-blue-950 underline">
+              &larr; הצעות קודמות
+            </a>
+          ) : (
+            <span />
+          )}
+          <span className="text-gray-400">עמוד {page}</span>
+          {hasNextPage ? (
+            <a href={`/quotes?page=${page + 1}`} className="text-blue-950 underline">
+              הצעות הבאות &rarr;
+            </a>
+          ) : (
+            <span />
+          )}
+        </div>
+      )}
     </div>
   );
 }
