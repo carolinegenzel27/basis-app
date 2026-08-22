@@ -39,15 +39,27 @@ export async function Navbar() {
           <span className="font-bold text-lg text-blue-950">Basis</span>
         </Link>
 
-        <nav className="flex flex-wrap items-center gap-y-1 text-sm divide-x divide-x-reverse divide-gray-200">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="px-3 text-gray-600 hover:text-blue-800 transition"
-            >
-              {link.label}
-            </Link>
+        {/* Separators are rendered as their own "|" element between links,
+            instead of a shared divide-x border on the container - a shared
+            border silently disappears at the exact spot a link wraps onto a
+            new line (the divider "belongs" to whichever visual row it lands
+            on, and looks disconnected/missing at the wrap point). Each link
+            carrying its own separator keeps the look correct at any width. */}
+        <nav className="flex flex-wrap items-center gap-y-1 text-sm">
+          {links.map((link, i) => (
+            <span key={link.href} className="flex items-center">
+              {i > 0 && (
+                <span className="text-gray-300 select-none" aria-hidden="true">
+                  |
+                </span>
+              )}
+              <Link
+                href={link.href}
+                className="px-3 text-gray-600 hover:text-blue-800 transition"
+              >
+                {link.label}
+              </Link>
+            </span>
           ))}
         </nav>
 

@@ -11,8 +11,8 @@ const initialState: ActionState = { success: false };
 
 const PROFESSIONS = [
   { value: "driving_instructor", label: "מורה לנהיגה" },
-  { value: "dietitian", label: "דיאטנית" },
-  { value: "private_chef", label: "שף פרטי" },
+  { value: "dietitian", label: "דיאטן/ית" },
+  { value: "private_chef", label: "שף/ית פרטי/ת" },
 ];
 
 export function OnboardingForm() {

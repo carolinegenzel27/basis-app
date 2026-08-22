@@ -11,8 +11,8 @@ export const runtime = "nodejs";
 
 const PROFESSION_LABELS: Record<string, string> = {
   driving_instructor: "מורה לנהיגה",
-  dietitian: "דיאטנית",
-  private_chef: "שף פרטי",
+  dietitian: "דיאטן/ית",
+  private_chef: "שף/ית פרטי/ת",
 };
 
 type PublicProfile = {
