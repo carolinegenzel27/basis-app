@@ -19,28 +19,40 @@ import { brandingSchema } from "./branding";
 // schema's actual rule (min/max length, format, numeric range).
 
 describe("signUpSchema / signInSchema", () => {
-  it("accepts a valid email + password", () => {
+  it("accepts a valid email + password (8+ chars, letter + digit)", () => {
     expect(
-      signUpSchema.safeParse({ email: "test@example.com", password: "abcdef" }).success
+      signUpSchema.safeParse({ email: "test@example.com", password: "abcdef12" }).success
     ).toBe(true);
   });
 
   it("rejects an invalid email", () => {
     expect(
-      signUpSchema.safeParse({ email: "not-an-email", password: "abcdef" }).success
+      signUpSchema.safeParse({ email: "not-an-email", password: "abcdef12" }).success
     ).toBe(false);
   });
 
-  it("rejects a password under 6 characters on sign-up", () => {
+  it("rejects a password under 8 characters on sign-up", () => {
     expect(
-      signUpSchema.safeParse({ email: "test@example.com", password: "12345" }).success
+      signUpSchema.safeParse({ email: "test@example.com", password: "ab12" }).success
+    ).toBe(false);
+  });
+
+  it("rejects a password with no digit on sign-up", () => {
+    expect(
+      signUpSchema.safeParse({ email: "test@example.com", password: "abcdefgh" }).success
+    ).toBe(false);
+  });
+
+  it("rejects a password with no letter on sign-up", () => {
+    expect(
+      signUpSchema.safeParse({ email: "test@example.com", password: "12345678" }).success
     ).toBe(false);
   });
 
   it("sign-in only requires a non-empty password (no minimum length)", () => {
-    // Sign-in intentionally doesn't re-enforce the 6-char rule - an existing
-    // account could predate the rule, so sign-in must accept any non-empty
-    // password and let Supabase itself say yes/no.
+    // Sign-in intentionally doesn't re-enforce the sign-up password rules -
+    // an existing account could predate them, so sign-in must accept any
+    // non-empty password and let Supabase itself say yes/no.
     expect(
       signInSchema.safeParse({ email: "test@example.com", password: "x" }).success
     ).toBe(true);

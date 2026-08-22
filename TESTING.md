@@ -33,19 +33,36 @@ npm run test:watch  # watch mode while developing
 | `lib/fit-assessment/scoring.test.ts` | `scoreFitAssessment` - averaging logic and the pricing/branding/both decision, including the tie-threshold branch | Silently mis-scoring this quiz would route a user to the wrong tool (pricing advisor vs. branding) with no visible error - the kind of bug nobody notices until a user complains. |
 | `lib/templates/branding-templates.test.ts` | `generateMarketingContent` - confirms all 6 answers actually appear in the 4 generated texts | This is the "no external AI" content engine. A template typo that drops a field is invisible until a real user notices their own answer missing from their marketing copy. |
 | `lib/pdf/bidi-text.test.ts` | `splitBidiRuns` - the fix for a real, previously-shipped Hebrew/PDF rendering bug (mixed Hebrew + digits/punctuation corrupting inside `@react-pdf/renderer`) | This is a regression test for a bug that already happened once in this project. Locking in the exact split behavior (Hebrew run / digit run / punctuation run) means it can't silently break again during a refactor. |
+| `lib/actions/quotes.test.ts` | `createQuote` and `deleteQuote` - the auth check (rejects when no user is logged in), the ownership check (rejects when the target row doesn't belong to the logged-in user), and that invalid input never even reaches Supabase | This is the one Server Action file that was previously untested (see below) - it now has direct coverage of the exact logic described in the security document as the third defense layer against one user touching another user's data. |
 
-**47 tests total, across 4 files, all passing** (`npm test`).
+**56 tests total, across 5 files, all passing** (`npm test`).
 
-## What is deliberately NOT covered in this pass, and why
+## How the Server Action test works, and what it does and doesn't prove
 
-- **Server Actions** (`lib/actions/*.ts`) - every one of them calls
-  `createClient()` and talks to Supabase for auth + DB reads/writes.
-  Testing them meaningfully needs either a real Supabase test project or a
-  hand-built mock of the Supabase JS client's query builder - both are
-  real, valuable next steps, but a larger scope than this pass. The
-  validation layer these actions depend on (see table above) is fully
-  covered instead, since that's where most realistic bugs and all
-  injection-style risks actually live.
+`lib/actions/quotes.test.ts` replaces `createClient()` (from
+`lib/supabase/server.ts`) with a small hand-built mock that mimics
+Supabase's chainable, "thenable" query builder (`.from().select().eq()...`)
+and returns pre-set results instead of talking to a real database. This
+proves that the *action's own code* makes the right decision - refuse to
+act - the moment an ownership lookup comes back empty, whether that
+lookup came back empty because the row doesn't exist or because it
+belongs to someone else.
+
+It does **not** re-test Row Level Security itself - RLS is a database-level
+guarantee enforced by Postgres, not by this TypeScript code, and is
+documented separately (with the actual policies) in the security document.
+Mocking Supabase means this test can't catch a bug in the RLS policies
+themselves - only a bug in how the Server Action responds to what RLS (or
+an empty result) hands back.
+
+## What is still not covered, and why
+
+- **Other Server Actions** (`lib/actions/auth.ts`, `branding.ts`,
+  `business-profile.ts`, `pricing.ts`, `profile-media.ts`) - `quotes.ts`
+  was picked as the representative example because it has the clearest
+  ownership-check pattern; the same mocking approach would extend
+  directly to the others, but doing all of them was a larger scope than
+  this pass.
 - **Pages / React components** - would need `@testing-library/react` (or
   similar) plus a jsdom environment, and most pages here are async Server
   Components that fetch from Supabase directly - the same blocker as
@@ -57,9 +74,8 @@ npm run test:watch  # watch mode while developing
 
 ## If continuing this work
 
-The highest-value next step would be extracting the Supabase calls in one
-representative Server Action (e.g. `createQuote`) behind a thin interface
-that can be swapped for an in-memory fake in tests - this is the standard
-pattern for testing code that currently calls `createClient()` directly,
-and would unlock testing the ownership-check logic (a security-relevant
-code path) without needing a real database.
+Apply the same Supabase-mocking pattern used in `lib/actions/quotes.test.ts`
+to the remaining Server Actions, starting with `auth.ts` (the sign-up
+user-enumeration behavior) and `profile-media.ts` (the file-upload
+ownership + path-sanitization checks) - these are the two other files
+where a silent bug would be most security-relevant.

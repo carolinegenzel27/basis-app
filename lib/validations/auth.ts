@@ -2,7 +2,11 @@ import { z } from "zod";
 
 export const signUpSchema = z.object({
   email: z.string().email("כתובת אימייל לא תקינה"),
-  password: z.string().min(6, "הסיסמה חייבת להכיל לפחות 6 תווים"),
+  password: z
+    .string()
+    .min(8, "הסיסמה חייבת להכיל לפחות 8 תווים")
+    .regex(/[a-zA-Z]/, "הסיסמה חייבת להכיל לפחות אות אחת")
+    .regex(/[0-9]/, "הסיסמה חייבת להכיל לפחות ספרה אחת"),
 });
 
 export const signInSchema = z.object({
