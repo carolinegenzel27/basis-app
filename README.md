@@ -68,6 +68,7 @@ npm install
    supabase/add_profile_media.sql
    supabase/fix_profile_view.sql
    supabase/update_pricing_real_data.sql
+   supabase/add_public_branding_text.sql
    ```
 
 3. תחת **Settings → API**, מעתיקים את ה-**Project URL**, את מפתח ה-**anon
