@@ -46,6 +46,8 @@ export async function updateProfileContent(
     about_me: formData.get("about_me") ?? "",
     experience_text: formData.get("experience_text") ?? "",
     additional_info: formData.get("additional_info") ?? "",
+    public_uvp_text: formData.get("public_uvp_text") ?? "",
+    public_website_text: formData.get("public_website_text") ?? "",
   });
 
   if (!parsed.success) {
@@ -67,6 +69,8 @@ export async function updateProfileContent(
       about_me: parsed.data.about_me || null,
       experience_text: parsed.data.experience_text || null,
       additional_info: parsed.data.additional_info || null,
+      public_uvp_text: parsed.data.public_uvp_text || null,
+      public_website_text: parsed.data.public_website_text || null,
     })
     .eq("id", parsed.data.business_profile_id)
     .eq("user_id", user.id);

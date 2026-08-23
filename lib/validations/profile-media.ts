@@ -7,6 +7,13 @@ export const profileContentSchema = z.object({
   about_me: z.string().max(600, "קצת עליי - עד 600 תווים").optional().or(z.literal("")),
   experience_text: z.string().max(600, "ניסיון - עד 600 תווים").optional().or(z.literal("")),
   additional_info: z.string().max(600, "לפרטים נוספים - עד 600 תווים").optional().or(z.literal("")),
+  // The owner's own editable copy of the branding-generated texts - stored
+  // separately from branding_profiles so that (a) re-generating branding
+  // later can't silently overwrite what she chose to publish, and (b) an
+  // empty value here means "don't show this on the public page", same
+  // pattern as about_me/experience_text/additional_info above.
+  public_uvp_text: z.string().max(400, "משפט מיתוג - עד 400 תווים").optional().or(z.literal("")),
+  public_website_text: z.string().max(800, "טקסט לאתר - עד 800 תווים").optional().or(z.literal("")),
 });
 
 // Shared limits for both the photo and each document - checked in the

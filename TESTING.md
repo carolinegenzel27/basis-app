@@ -35,7 +35,7 @@ npm run test:watch  # watch mode while developing
 | `lib/pdf/bidi-text.test.ts` | `splitBidiRuns` - the fix for a real, previously-shipped Hebrew/PDF rendering bug (mixed Hebrew + digits/punctuation corrupting inside `@react-pdf/renderer`) | This is a regression test for a bug that already happened once in this project. Locking in the exact split behavior (Hebrew run / digit run / punctuation run) means it can't silently break again during a refactor. |
 | `lib/actions/quotes.test.ts` | `createQuote` and `deleteQuote` - the auth check (rejects when no user is logged in), the ownership check (rejects when the target row doesn't belong to the logged-in user), and that invalid input never even reaches Supabase | This is the one Server Action file that was previously untested (see below) - it now has direct coverage of the exact logic described in the security document as the third defense layer against one user touching another user's data. |
 
-**56 tests total, across 5 files, all passing** (`npm test`).
+**58 tests total, across 5 files, all passing** (`npm test`).
 
 ## How the Server Action test works, and what it does and doesn't prove
 

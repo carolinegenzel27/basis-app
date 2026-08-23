@@ -182,6 +182,25 @@ describe("profileContentSchema", () => {
       }).success
     ).toBe(false);
   });
+
+  it("accepts a public_uvp_text / public_website_text edit within the length limits", () => {
+    expect(
+      profileContentSchema.safeParse({
+        business_profile_id: validId,
+        public_uvp_text: "אני עוזר/ת ללקוחות שלי",
+        public_website_text: "טקסט לאתר שכתבתי בעצמי",
+      }).success
+    ).toBe(true);
+  });
+
+  it("rejects public_uvp_text over 400 characters", () => {
+    expect(
+      profileContentSchema.safeParse({
+        business_profile_id: validId,
+        public_uvp_text: "א".repeat(401),
+      }).success
+    ).toBe(false);
+  });
 });
 
 describe("file upload constants (profile-media)", () => {

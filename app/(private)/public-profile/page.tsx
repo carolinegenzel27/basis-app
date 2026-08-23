@@ -13,7 +13,9 @@ export default async function PublicProfilePage() {
 
   const { data: businessProfile, error: profileError } = await supabase
     .from("business_profiles")
-    .select("id, slug, about_me, experience_text, additional_info, photo_url")
+    .select(
+      "id, slug, about_me, experience_text, additional_info, photo_url, public_uvp_text, public_website_text"
+    )
     .eq("user_id", user!.id)
     .maybeSingle();
 
@@ -55,6 +57,17 @@ export default async function PublicProfilePage() {
     .eq("business_profile_id", businessProfile.id)
     .order("created_at", { ascending: false });
 
+  // The branding-generated texts (if she's filled out the מיתוג questionnaire) -
+  // shown as a one-click "load" starting point in ProfileContentForm, but
+  // never written to the public page directly. Her own public_uvp_text /
+  // public_website_text columns are what actually get published, so a later
+  // branding re-generation can't silently overwrite what she chose to show.
+  const { data: branding } = await supabase
+    .from("branding_profiles")
+    .select("uvp_statement, website_text")
+    .eq("business_profile_id", businessProfile.id)
+    .maybeSingle();
+
   return (
     <div className="max-w-2xl mx-auto p-8 space-y-8">
       <div>
@@ -92,6 +105,10 @@ export default async function PublicProfilePage() {
           defaultAboutMe={businessProfile.about_me ?? ""}
           defaultExperienceText={businessProfile.experience_text ?? ""}
           defaultAdditionalInfo={businessProfile.additional_info ?? ""}
+          defaultPublicUvpText={businessProfile.public_uvp_text ?? ""}
+          defaultPublicWebsiteText={businessProfile.public_website_text ?? ""}
+          generatedUvpStatement={branding?.uvp_statement ?? null}
+          generatedWebsiteText={branding?.website_text ?? null}
         />
       </section>
 
