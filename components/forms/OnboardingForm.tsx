@@ -111,7 +111,7 @@ export function OnboardingForm() {
 
       {state.error && <p className="text-sm text-red-600">{state.error}</p>}
 
-      <SubmitButton>המשך למסך הבית</SubmitButton>
+      <SubmitButton>המשך לשאלון התאמה</SubmitButton>
     </form>
   );
 }
