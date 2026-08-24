@@ -34,8 +34,9 @@ npm run test:watch  # watch mode while developing
 | `lib/templates/branding-templates.test.ts` | `generateMarketingContent` - confirms all 6 answers actually appear in the 4 generated texts | This is the "no external AI" content engine. A template typo that drops a field is invisible until a real user notices their own answer missing from their marketing copy. |
 | `lib/pdf/bidi-text.test.ts` | `splitBidiRuns` - the fix for a real, previously-shipped Hebrew/PDF rendering bug (mixed Hebrew + digits/punctuation corrupting inside `@react-pdf/renderer`) | This is a regression test for a bug that already happened once in this project. Locking in the exact split behavior (Hebrew run / digit run / punctuation run) means it can't silently break again during a refactor. |
 | `lib/actions/quotes.test.ts` | `createQuote` and `deleteQuote` - the auth check (rejects when no user is logged in), the ownership check (rejects when the target row doesn't belong to the logged-in user), and that invalid input never even reaches Supabase | This is the one Server Action file that was previously untested (see below) - it now has direct coverage of the exact logic described in the security document as the third defense layer against one user touching another user's data. |
+| `lib/actions/auth.test.ts` | `signUpAction` and `signInAction` - both reject invalid input (bad email, weak password, empty password) before Supabase is ever called; `signInAction` returns the identical vague error regardless of *why* Supabase rejected the login; `signUpAction` returns a specific message when Supabase reports success but issues no session | This is the anti-enumeration guarantee described in the security document - the whole point is that an attacker can't tell "wrong password" apart from "no such account" from the response alone. A test is the only way to lock that in, since the bug (accidentally returning Supabase's real error message) wouldn't look wrong in a screenshot - it would just quietly leak information. |
 
-**58 tests total, across 5 files, all passing** (`npm test`).
+**64 tests total, across 6 files, all passing** (`npm test`).
 
 ## How the Server Action test works, and what it does and doesn't prove
 
@@ -57,12 +58,18 @@ an empty result) hands back.
 
 ## What is still not covered, and why
 
-- **Other Server Actions** (`lib/actions/auth.ts`, `branding.ts`,
-  `business-profile.ts`, `pricing.ts`, `profile-media.ts`) - `quotes.ts`
-  was picked as the representative example because it has the clearest
-  ownership-check pattern; the same mocking approach would extend
-  directly to the others, but doing all of them was a larger scope than
-  this pass.
+- **`auth.ts`'s success paths** (`redirect("/onboarding")`, `redirect("/dashboard")`)
+  and `signOutAction` - every test added only exercises the branches that
+  return *before* `redirect()` is called, since redirecting throws a
+  special Next.js control-flow error that would need `next/navigation`
+  mocked too. These paths were verified manually instead (signing up and
+  logging in on the live deployment).
+- **Other Server Actions** (`branding.ts`, `business-profile.ts`,
+  `pricing.ts`, `profile-media.ts`) - `quotes.ts` and `auth.ts` were picked
+  first because they cover the two most security-relevant patterns
+  (ownership checks, anti-enumeration); the same mocking approach would
+  extend directly to the others, but doing all of them was a larger scope
+  than this pass.
 - **Pages / React components** - would need `@testing-library/react` (or
   similar) plus a jsdom environment, and most pages here are async Server
   Components that fetch from Supabase directly - the same blocker as
@@ -74,8 +81,8 @@ an empty result) hands back.
 
 ## If continuing this work
 
-Apply the same Supabase-mocking pattern used in `lib/actions/quotes.test.ts`
-to the remaining Server Actions, starting with `auth.ts` (the sign-up
-user-enumeration behavior) and `profile-media.ts` (the file-upload
-ownership + path-sanitization checks) - these are the two other files
-where a silent bug would be most security-relevant.
+Apply the same Supabase-mocking pattern to the remaining Server Actions,
+starting with `profile-media.ts` (the file-upload ownership +
+path-sanitization checks) - the mock would also need extending to fake
+`supabase.storage`, which none of the current tests do yet, since none of
+the other Server Actions touch Storage.
