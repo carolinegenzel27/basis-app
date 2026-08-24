@@ -118,10 +118,10 @@ export function QuoteForm({
         )}
         {marketRange && (
           <p className="text-xs text-slate-500 mt-1">
-            בהתבסס על נתוני השוק, אנחנו ממליצים לגבות בין{" "}
+            אנחנו ממליצים לגבות בין{" "}
             {marketRange.min.toLocaleString("he-IL")}-
             {marketRange.max.toLocaleString("he-IL")} ₪ עבור שירות בודד מהסוג
-            הזה - גם אם הסכום ישתנה, ההמלצה הזו תישאר מוצגת כאן לתזכורת.
+            הזה.
           </p>
         )}
       </div>
