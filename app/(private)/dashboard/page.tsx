@@ -34,24 +34,31 @@ export default async function DashboardPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Gate: the fit assessment is a required one-time step right after
-  // onboarding. If it hasn't been completed yet, send the user there first.
+  // Gate 1: onboarding itself. A user who signed up, left before finishing
+  // the business-profile form, and later logs back in (signInAction always
+  // redirects to /dashboard, never back to /onboarding) would otherwise land
+  // here with no business_profile row - every feature card below assumes
+  // one exists. Send her to finish onboarding first.
   const { data: businessProfile } = await supabase
     .from("business_profiles")
     .select("id, slug, business_name")
     .eq("user_id", user!.id)
     .maybeSingle();
 
-  if (businessProfile) {
-    const { data: fitAssessment } = await supabase
-      .from("fit_assessments")
-      .select("id")
-      .eq("business_profile_id", businessProfile.id)
-      .maybeSingle();
+  if (!businessProfile) {
+    redirect("/onboarding");
+  }
 
-    if (!fitAssessment) {
-      redirect("/fit-assessment");
-    }
+  // Gate 2: the fit assessment is a required one-time step right after
+  // onboarding. If it hasn't been completed yet, send the user there first.
+  const { data: fitAssessment } = await supabase
+    .from("fit_assessments")
+    .select("id")
+    .eq("business_profile_id", businessProfile.id)
+    .maybeSingle();
+
+  if (!fitAssessment) {
+    redirect("/fit-assessment");
   }
 
   return (
