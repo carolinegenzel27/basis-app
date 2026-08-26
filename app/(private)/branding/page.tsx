@@ -48,7 +48,7 @@ export default async function BrandingPage() {
   return (
     <div className="max-w-2xl mx-auto p-8 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-blue-950">מיתוג ומיצוב</h1>
+        <h1 className="text-2xl font-bold text-blue-950">מיתוג</h1>
         <p className="text-gray-600 mt-1">
           יש לענות על כל השאלות הבאות, ונבנה עבורכם את החומרים השיווקיים.
         </p>

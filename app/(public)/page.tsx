@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const HIGHLIGHTS = [
   {
-    title: "מיתוג ומיצוב",
+    title: "מיתוג",
     description: "שאלון קצר שהופך לחומרים שיווקיים מוכנים לשימוש.",
   },
   {

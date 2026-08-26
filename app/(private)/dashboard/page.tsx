@@ -8,7 +8,7 @@ import { PublicLinkCopyButton } from "@/components/ui/PublicLinkCopyButton";
 const FEATURES = [
   {
     href: "/branding",
-    title: "מיתוג ומיצוב",
+    title: "מיתוג",
     description: "שאלון קצר שהופך לחומרים שיווקיים מוכנים - הצהרת ערך, טקסט לאתר, ופיץ' מכירתי.",
   },
   {
