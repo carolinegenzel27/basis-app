@@ -50,7 +50,7 @@ export default async function BrandingPage() {
       <div>
         <h1 className="text-2xl font-bold text-blue-950">מיתוג ומיצוב</h1>
         <p className="text-gray-600 mt-1">
-          ענו על השאלות, ונבנה לכם חומרים שיווקיים מוכנים.
+          יש לענות על כל השאלות הבאות, ונבנה עבורכם את החומרים השיווקיים.
         </p>
       </div>
 
