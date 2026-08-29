@@ -89,8 +89,8 @@ export default async function DashboardPage() {
         <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-2">
           <p className="text-sm font-medium text-blue-950">הדף הציבורי שלך</p>
           <p className="text-xs text-gray-500">
-            זו הכתובת שאפשר לשלוח ללקוחות פוטנציאליים - היא מציגה את שם
-            העסק והמיתוג שלך, בלי צורך בהתחברות.
+            הלינק לכרטיס הביקור הדיגיטלי שלך, ניתן לשלוח את קישור זה לכל
+            לקוח פוטנציאלי בשניות.
           </p>
           <PublicLinkCopyButton slug={businessProfile.slug} />
         </div>
