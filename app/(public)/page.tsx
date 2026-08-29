@@ -39,7 +39,7 @@ export default function LandingPage() {
             size even if a stylesheet fails to load - see Navbar.tsx. */}
         <Image src="/logo-full.png" alt="Basis" width={102} height={128} className="h-32 w-auto" priority />
         <h1 className="text-4xl sm:text-5xl font-bold text-blue-950 max-w-2xl leading-tight">
-          המינוף שחסר לעסק הקטן שלך
+          המינוף שחסר לעסק שלך
         </h1>
         <p className="max-w-md text-gray-600 text-lg">
           עוזר לבעלי עסקים קטנים ועצמאים למתג, לתמחר, ולהפיק הצעות מחיר

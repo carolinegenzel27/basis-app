@@ -54,15 +54,26 @@ export function ProfileContentForm({
                 <label htmlFor="public_uvp_text" className="block text-sm font-medium">
                   משפט מיתוג (UVP)
                 </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (uvpRef.current) uvpRef.current.value = generatedUvpStatement;
-                  }}
-                  className="text-xs text-blue-800 underline"
-                >
-                  טעינה מהמיתוג
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (uvpRef.current) uvpRef.current.value = generatedUvpStatement;
+                    }}
+                    className="text-xs text-blue-800 underline"
+                  >
+                    טעינה מהמיתוג
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (uvpRef.current) uvpRef.current.value = "";
+                    }}
+                    className="text-xs text-red-700 underline"
+                  >
+                    מחיקה
+                  </button>
+                </div>
               </div>
               <textarea
                 id="public_uvp_text"
@@ -84,15 +95,26 @@ export function ProfileContentForm({
                 <label htmlFor="public_website_text" className="block text-sm font-medium">
                   טקסט לאתר
                 </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (websiteRef.current) websiteRef.current.value = generatedWebsiteText;
-                  }}
-                  className="text-xs text-blue-800 underline"
-                >
-                  טעינה מהמיתוג
-                </button>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (websiteRef.current) websiteRef.current.value = generatedWebsiteText;
+                    }}
+                    className="text-xs text-blue-800 underline"
+                  >
+                    טעינה מהמיתוג
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (websiteRef.current) websiteRef.current.value = "";
+                    }}
+                    className="text-xs text-red-700 underline"
+                  >
+                    מחיקה
+                  </button>
+                </div>
               </div>
               <textarea
                 id="public_website_text"
