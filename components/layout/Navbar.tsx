@@ -25,7 +25,7 @@ export async function Navbar() {
 
   return (
     <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
-      <div className="max-w-3xl mx-auto px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div className="max-w-5xl mx-auto px-6 py-3 flex flex-wrap items-center justify-between gap-3">
         {/* Explicit width/height (rendered as real <img> attributes) instead
             of the fill+positioned-parent pattern - fill depends on CSS
             classes sizing the parent box, so with a stale/missing stylesheet
