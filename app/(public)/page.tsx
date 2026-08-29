@@ -11,8 +11,12 @@ const HIGHLIGHTS = [
     description: "טווח מחיר מומלץ, מבוסס נתוני שוק אמיתיים בתחום שלך.",
   },
   {
-    title: "הצעות מחיר ועמוד ציבורי",
-    description: "PDF מקצועי ללקוח, ועמוד שאפשר לשלוח לכל מי שרוצה להכיר אותך.",
+    title: "הצעות מחיר",
+    description: "יצירת הצעות מחיר מקצועיות והורדה כ-PDF, תוך שנייה.",
+  },
+  {
+    title: "עמוד ציבורי",
+    description: "עמוד עסקי שאפשר לשלוח לכל מי שרוצה להכיר אותך, בלי התחברות.",
   },
 ];
 
@@ -58,7 +62,7 @@ export default function LandingPage() {
       </main>
 
       <section className="max-w-4xl w-full mx-auto px-6 pb-16">
-        <div className="grid sm:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 gap-6">
           {HIGHLIGHTS.map((item) => (
             <div
               key={item.title}
