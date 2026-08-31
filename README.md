@@ -37,6 +37,7 @@ clients.
 - **Zod** - server-side validation on every write action
 - **@react-pdf/renderer** - server-side PDF generation (quotes)
 - **Vitest** - unit tests (see `TESTING.md`)
+- **Playwright** - end-to-end tests (see `TESTING.md`)
 - **Vercel** - hosting and deployment
 
 ## Prerequisites
@@ -108,8 +109,25 @@ npm test             # single run
 npm run test:watch   # watch mode
 ```
 
+### End-to-end tests (Playwright)
+
+One-time setup, both steps:
+
+```bash
+npx playwright install chromium
+```
+
+Then run `supabase/grant_service_role_for_tests.sql` once in the Supabase
+SQL Editor - the test helpers seed data directly through the `service_role`
+admin client, which has no table access until it's explicitly granted one.
+Not needed to run the app itself, only the e2e tests.
+
+```bash
+npm run test:e2e
+```
+
 For full details on what's tested, why, and what's intentionally out of
-scope, see `TESTING.md`.
+scope (for both the unit and end-to-end suites), see `TESTING.md`.
 
 ## Lint
 
