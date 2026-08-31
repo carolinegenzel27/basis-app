@@ -38,6 +38,55 @@ npm run test:watch  # watch mode while developing
 
 **64 tests total, across 6 files, all passing** (`npm test`).
 
+## End-to-end tests (Playwright)
+
+Framework: [Playwright](https://playwright.dev/). Unlike the Vitest suite
+above, these drive a real browser against a real running instance of the
+app (`npm run dev`, started automatically by `playwright.config.ts`) and a
+real Supabase project - they're the only tests here that exercise Next.js
+routing/redirects, RLS, and the actual PDF Route Handler together, instead
+of one layer at a time with everything else mocked.
+
+Run the suite. One-time setup, both steps:
+
+1. `npx playwright install chromium`
+2. Run `supabase/grant_service_role_for_tests.sql` once in the Supabase SQL
+   Editor - the test helpers seed a business profile, fit assessment, and
+   quote directly through the `service_role` admin client, which (like every
+   other role in this project) has no table access until it's explicitly
+   granted one. Not needed to run the app itself, only the e2e tests.
+
+```bash
+npm run test:e2e
+```
+
+| File | What it covers |
+|---|---|
+| `tests/e2e/full-flow.spec.ts` | The full mandatory funnel a brand-new user must pass through: signup → onboarding → fit assessment → dashboard. Walks through every gate in `app/(private)/layout.tsx` and `dashboard/page.tsx` the same way a real user would, through the real forms. |
+| `tests/e2e/quote-pdf.spec.ts` | Quote creation end to end, then downloading the generated file from `app/api/quotes/[id]/pdf/route.ts` and checking it's a real PDF (`%PDF-` header, `Content-Type: application/pdf`) - not just that a 200 came back. A second test confirms the same route returns 401 for a logged-out request. |
+| `tests/e2e/authorization.spec.ts` | Two real accounts: user B cannot download user A's quote PDF (real RLS returns no row, route responds 404, not the file) and never sees it in their own `/quotes` list. This is the "wrong user" version of the authorization check - `quote-pdf.spec.ts`'s 401 test only covers "no user at all". Matches Basis_מסמך_אפיון_בדיקות.docx section 4 (#2/#3). |
+| `tests/e2e/onboarding-slug.spec.ts` | The slug-collision loop in `createBusinessProfile` (`baseSlug-2`, `baseSlug-3`, ...) - two different real signups deliberately choose the same public URL, and the test confirms Postgres actually stored the second one with a `-2` suffix rather than just not erroring. This logic had no automated coverage anywhere before (it needs a live "is this slug taken" lookup, so it can't be a Vitest unit test). Matches Basis_מסמך_אפיון_בדיקות.docx section 6 (#3). |
+
+**Test data**: every spec creates its own throwaway Supabase Auth user(s)
+(`e2e-<label>-<timestamp>@example.com`) via the `service_role` key, and
+delete it in an `afterAll` hook - deleting the auth user cascades
+(`on delete cascade` on `business_profiles.user_id`) through the profile,
+fit assessment, and any quotes created during the test, so nothing is left
+behind in the database on a normal run. If a run crashes mid-test the
+cleanup hook won't fire, so an `e2e-...@example.com` row could theoretically
+be left behind - the email prefix makes any leftover easy to spot and
+delete by hand in Supabase Studio.
+
+**Requires real credentials**: these tests need a real `.env.local` (same
+three variables as running the app locally) and real outbound network
+access to your Supabase project - they will not run in a network-restricted
+sandbox. They have been verified to type-check, lint cleanly, and be
+correctly discovered by Playwright (`npx playwright test --list`), but have
+not yet been executed end-to-end in this environment - run `npm run test:e2e`
+locally once before relying on them, the same way `npm test` and
+`npm run build` are already verified locally rather than in the assistant's
+sandbox.
+
 ## How the Server Action test works, and what it does and doesn't prove
 
 `lib/actions/quotes.test.ts` replaces `createClient()` (from
@@ -74,10 +123,9 @@ an empty result) hands back.
   similar) plus a jsdom environment, and most pages here are async Server
   Components that fetch from Supabase directly - the same blocker as
   Server Actions.
-- **End-to-end flows** (signup → onboarding → quote → PDF download) - this
-  was instead verified manually against the live Vercel deployment
-  (signup, PDF generation, and file upload were each exercised by hand
-  after deploying).
+- **File upload** (`profile-media.ts`) - still only verified manually
+  against the live Vercel deployment; the two Playwright specs above don't
+  touch Storage.
 
 ## If continuing this work
 

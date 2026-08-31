@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { businessProfileSchema } from "@/lib/validations/business-profile";
 
@@ -37,10 +37,22 @@ export async function createBusinessProfile(
   const baseSlug = parsed.data.slug.trim().toLowerCase();
 
   // If the slug is taken, keep trying baseSlug-2, baseSlug-3, ... until free.
+  //
+  // Uses the admin client here on purpose, not the regular one: RLS on
+  // business_profiles only lets a user SELECT their *own* row
+  // ("auth.uid() = user_id"), so checking whether someone else already has
+  // this slug would otherwise always come back empty regardless of the
+  // real answer - RLS would silently hide the collision, this loop would
+  // never append "-2", and the insert below would fail on the slug's
+  // "unique" constraint with a raw Postgres error instead. Safe to bypass
+  // RLS for this one read: a slug is about to become a public URL anyway,
+  // so its existence isn't sensitive, and only its id is read - never
+  // returned to the caller.
+  const admin = createAdminClient();
   let finalSlug = baseSlug;
   let attempt = 1;
   while (true) {
-    const { data: existing } = await supabase
+    const { data: existing } = await admin
       .from("business_profiles")
       .select("id")
       .eq("slug", finalSlug)
