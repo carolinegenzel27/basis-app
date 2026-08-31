@@ -8,7 +8,7 @@ import {
   TEST_PASSWORD,
 } from "./helpers";
 
-// The real-world version of Basis_מסמך_אפיון_בדיקות.docx section 4 (#2/#3):
+// The real-world version of Basis_מסמך_אפיון_בדיקות.pdf section 4 (#2/#3):
 // "user A tries to view/download a quote belonging to user B, by changing
 // the id in the URL". lib/actions/quotes.test.ts already proves this at the
 // unit level with a mocked Supabase client - this test proves the same

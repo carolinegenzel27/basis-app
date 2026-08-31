@@ -2,7 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Page } from "@playwright/test";
 
 // Admin client - uses the service_role key, the same secret described in
-// Basis_מסמך_אבטחה.docx section 7. Only ever used here, in test code that
+// Basis_מסמך_אבטחה.pdf section 7. Only ever used here, in test code that
 // runs on the developer's machine (or CI), never shipped in the app itself.
 // It exists in this file for exactly one reason: real E2E tests need to
 // confirm/clean up real rows in the same Supabase project the app runs

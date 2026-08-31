@@ -15,7 +15,7 @@ import {
 // (it needs a real "is this slug already in the table" lookup against a
 // live database), and it isn't exercised by full-flow.spec.ts (that test
 // always uses a fresh, unique slug). Documented as a manual test in
-// Basis_מסמך_אפיון_בדיקות.docx section 6 (#3) - this automates it.
+// Basis_מסמך_אפיון_בדיקות.pdf section 6 (#3) - this automates it.
 //
 // Fills the same onboarding form as full-flow.spec.ts, for two different
 // signed-up users, on purpose - the interesting behavior only shows up

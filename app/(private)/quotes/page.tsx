@@ -7,7 +7,7 @@ import { deleteQuote } from "@/lib/actions/quotes";
 // fallback title string.
 const DEFAULT_QUOTE_TITLE = "הצעת מחיר";
 
-// Pagination - see Basis_מסמך_סקיילביליות.docx section 5. Page-based via a
+// Pagination - see Basis_מסמך_סקייל_בסיסי.pdf section 5. Page-based via a
 // URL search param (?page=2), which is the idiomatic Next.js App Router
 // pattern for a Server Component: no client-side state, no extra Server
 // Action, the URL itself is the source of truth and is shareable/bookmarkable.

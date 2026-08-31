@@ -55,7 +55,7 @@ test.describe("quote creation and PDF download", () => {
     // context the page is using) rather than dealing with an actual browser
     // download - what matters for this test is that the server returns a
     // real PDF to the owner, which is exactly what
-    // Basis_מסמך_תכנון_טכני.docx section 4 documents for this endpoint.
+    // Basis_מסמך_תכנון_טכני.pdf section 4 documents for this endpoint.
     const response = await page.request.get(pdfHref!);
     expect(response.status()).toBe(200);
     expect(response.headers()["content-type"]).toContain("application/pdf");
@@ -69,7 +69,7 @@ test.describe("quote creation and PDF download", () => {
   });
 
   test("an unauthenticated request to the PDF route is rejected with 401 (end-to-end permission check)", async ({ request }) => {
-    // Same check documented in Basis_מסמך_אפיון_בדיקות.docx section 4 (#3),
+    // Same check documented in Basis_מסמך_אפיון_בדיקות.pdf section 4 (#8),
     // but as a real HTTP call instead of a unit-test mock: the `request`
     // fixture here is a fresh, cookie-less context (unrelated to `page`),
     // so this is exactly what a logged-out visitor or a leaked link would

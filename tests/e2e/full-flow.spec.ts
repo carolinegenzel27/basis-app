@@ -6,7 +6,7 @@ import { FIT_QUESTIONS } from "../../lib/fit-assessment/questions";
 // before reaching the dashboard: signup -> onboarding -> fit assessment.
 // Every gate along the way (app/(private)/layout.tsx, and the two explicit
 // redirects in dashboard/page.tsx) is a real product decision documented in
-// Basis_מסמך_תכנון_טכני.docx section 8 (onboarding as a mandatory gate) -
+// Basis_מסמך_תכנון_טכני.pdf section 8 (onboarding as a mandatory gate) -
 // this test walks through them the same way a real user would, through the
 // real UI, against the real Supabase project.
 //
