@@ -15,3 +15,7 @@
 grant select, insert, delete on business_profiles to service_role;
 grant select, insert, delete on fit_assessments to service_role;
 grant select, insert, delete on quotes to service_role;
+-- Added for tests/e2e/public-access.spec.ts, which seeds a draft branding
+-- row and a document row to check what the public API hands out.
+grant select, insert, delete on branding_profiles to service_role;
+grant select, insert, delete on business_profile_documents to service_role;

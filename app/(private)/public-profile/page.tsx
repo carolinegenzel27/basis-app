@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ProfileContentForm } from "@/components/forms/ProfileContentForm";
 import { PhotoUploadForm } from "@/components/forms/PhotoUploadForm";
 import { DocumentUploadForm } from "@/components/forms/DocumentUploadForm";
-import { deleteProfileDocument } from "@/lib/actions/profile-media";
+import { DeleteDocumentButton } from "@/components/forms/DeleteDocumentButton";
 
 export default async function PublicProfilePage() {
   const supabase = await createClient();
@@ -133,16 +133,7 @@ export default async function PublicProfilePage() {
                 >
                   {doc.file_name}
                 </a>
-                <form
-                  action={async () => {
-                    "use server";
-                    await deleteProfileDocument(doc.id);
-                  }}
-                >
-                  <button type="submit" className="text-xs text-red-600 underline shrink-0">
-                    מחיקה
-                  </button>
-                </form>
+                <DeleteDocumentButton documentId={doc.id} />
               </li>
             ))}
           </ul>

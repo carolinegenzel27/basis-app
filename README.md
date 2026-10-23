@@ -70,6 +70,7 @@ npm install
    supabase/update_pricing_real_data.sql
    supabase/add_public_branding_text.sql
    supabase/add_indexes.sql
+   supabase/fix_public_access.sql
    ```
 
 3. Under **Settings → API**, copy the **Project URL**, the **anon

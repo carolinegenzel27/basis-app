@@ -26,8 +26,6 @@ type PublicProfile = {
   photo_url: string | null;
   uvp_statement: string | null;
   website_text: string | null;
-  linkedin_text: string | null;
-  sales_pitch: string | null;
 };
 
 type PublicDocument = {
@@ -50,7 +48,9 @@ async function getProfile(slug: string): Promise<PublicProfile | null> {
   const supabase = await createClient();
   const { data } = await supabase
     .from("public_business_profiles")
-    .select("*")
+    .select(
+      "business_profile_id, slug, business_name, profession, about_me, experience_text, additional_info, photo_url, uvp_statement, website_text"
+    )
     .eq("slug", slug)
     .maybeSingle();
 

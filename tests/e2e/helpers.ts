@@ -190,3 +190,52 @@ export async function deleteTestUser(email: string) {
     }
   }
 }
+
+// A client with only the PUBLIC anon key - exactly what any visitor (or
+// anyone who copies the key out of the page's JavaScript) has. Used to call
+// the REST API directly, bypassing the app's own pages, to check what the
+// database itself is willing to hand out.
+export function anonClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) {
+    throw new Error("Missing NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local");
+  }
+  return createClient(url, anonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
+
+// Same public key, but signed in - this runs as the "authenticated" role,
+// which RLS treats as a completely separate role from "anon".
+export async function signedInClient(email: string, password: string) {
+  const client = anonClient();
+  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (error) throw new Error(`signInWithPassword failed for ${email}: ${describeError(error)}`);
+  return client;
+}
+
+// Seeds draft branding text (never published) and one public document row
+// for a profile, so the public-access test has something to look for.
+export async function seedBrandingAndDocument(businessProfileId: string) {
+  const admin = adminClient();
+  const { error: brandingError } = await admin.from("branding_profiles").insert({
+    business_profile_id: businessProfileId,
+    answers: {},
+    linkedin_text: "E2E-UNPUBLISHED-LINKEDIN-DRAFT",
+    sales_pitch: "E2E-UNPUBLISHED-SALES-PITCH",
+  });
+  if (brandingError) throw new Error(`branding_profiles insert failed: ${describeError(brandingError)}`);
+
+  const { data: doc, error: docError } = await admin
+    .from("business_profile_documents")
+    .insert({
+      business_profile_id: businessProfileId,
+      file_name: "e2e-certificate.pdf",
+      file_url: `https://example.com/public-media/${businessProfileId}/documents/e2e.pdf`,
+    })
+    .select("id")
+    .single();
+  if (docError || !doc) throw new Error(`document insert failed: ${describeError(docError)}`);
+  return doc.id as string;
+}

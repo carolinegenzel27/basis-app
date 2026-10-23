@@ -83,6 +83,12 @@ export async function updateProfileContent(
   return { success: true };
 }
 
+// The public URL looks like ".../storage/v1/object/public/public-media/<path>"
+// - the part after the bucket name is the object's path inside the bucket.
+function storagePathFromUrl(url: string): string | null {
+  return url.split("/public-media/")[1] || null;
+}
+
 function extensionFor(file: File): string {
   const fromName = file.name.split(".").pop();
   if (fromName && fromName.length <= 5) return fromName.toLowerCase();
@@ -142,14 +148,17 @@ export async function uploadProfilePhoto(
     .eq("id", ownedId);
 
   if (updateError) {
-    return { success: false, error: updateError.message };
+    // The new file is already in Storage but nothing points at it - remove
+    // it so a failed save doesn't leave an orphaned public file behind.
+    await supabase.storage.from("public-media").remove([path]);
+    return { success: false, error: "שמירת התמונה נכשלה, נסי שוב" };
   }
 
   // Best-effort cleanup of the previous photo - not critical if it fails
   // (an orphaned file in Storage costs nothing functionally), so this
   // doesn't block the response either way.
   if (existing?.photo_url) {
-    const oldPath = existing.photo_url.split("/public-media/")[1];
+    const oldPath = storagePathFromUrl(existing.photo_url);
     if (oldPath) {
       await supabase.storage.from("public-media").remove([oldPath]);
     }
@@ -212,7 +221,11 @@ export async function uploadProfileDocument(
     });
 
   if (insertError) {
-    return { success: false, error: insertError.message };
+    // Upload succeeded but the record didn't - without this, the file would
+    // stay publicly reachable in Storage with no row that lists it and no
+    // way for the owner to delete it from the UI. Roll the upload back.
+    await supabase.storage.from("public-media").remove([path]);
+    return { success: false, error: "שמירת המסמך נכשלה, נסי שוב" };
   }
 
   revalidatePath("/public-profile");
@@ -236,20 +249,52 @@ export async function deleteProfileDocument(
     return { success: false, error: "המסמך לא נמצא" };
   }
 
-  const { error } = await supabase
+  const storagePath = storagePathFromUrl(document.file_url);
+  if (!storagePath) {
+    return { success: false, error: "לא ניתן לאתר את הקובץ למחיקה" };
+  }
+
+  // Order matters: delete the FILE first, and only remove the record once
+  // the file is really gone. The file's public URL is the thing that leaks -
+  // if Storage deletion failed after the record was already removed, the
+  // file would stay reachable by anyone holding its link, with no row left
+  // for the owner to retry from. Failing here instead keeps the document in
+  // the list, so the owner can simply press delete again.
+  const { error: storageError } = await supabase.storage
+    .from("public-media")
+    .remove([storagePath]);
+
+  if (storageError) {
+    return { success: false, error: "מחיקת הקובץ נכשלה, נסי שוב" };
+  }
+
+  const { error: deleteError } = await supabase
     .from("business_profile_documents")
     .delete()
     .eq("id", documentId);
 
-  if (error) {
-    return { success: false, error: error.message };
-  }
-
-  const storagePath = document.file_url.split("/public-media/")[1];
-  if (storagePath) {
-    await supabase.storage.from("public-media").remove([storagePath]);
+  if (deleteError) {
+    // The file is already gone, so nothing is exposed - the row just points
+    // at a missing file. Retrying is safe: removing an already-missing
+    // object from Storage is not an error, so the next attempt goes
+    // straight through to deleting the row.
+    return { success: false, error: "מחיקת המסמך נכשלה, נסי שוב" };
   }
 
   revalidatePath("/public-profile");
   return { success: true };
+}
+
+// Form-shaped wrapper so the delete button can use useActionState and show
+// an error to the owner - the plain function above returns a result, but a
+// bare <form action> would throw it away and a failed delete would be silent.
+export async function deleteProfileDocumentAction(
+  _prevState: ActionState,
+  formData: FormData
+): Promise<ActionState> {
+  const documentId = formData.get("document_id");
+  if (typeof documentId !== "string" || !documentId) {
+    return { success: false, error: "המסמך לא נמצא" };
+  }
+  return deleteProfileDocument(documentId);
 }
