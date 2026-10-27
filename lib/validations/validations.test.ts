@@ -75,9 +75,15 @@ describe("businessProfileSchema", () => {
     expect(businessProfileSchema.safeParse(valid).success).toBe(true);
   });
 
-  it("rejects an unknown profession", () => {
+  it("accepts any free-text profession", () => {
     expect(
-      businessProfileSchema.safeParse({ ...valid, profession: "plumber" }).success
+      businessProfileSchema.safeParse({ ...valid, profession: "קונדיטורית" }).success
+    ).toBe(true);
+  });
+
+  it("rejects an empty profession", () => {
+    expect(
+      businessProfileSchema.safeParse({ ...valid, profession: " " }).success
     ).toBe(false);
   });
 
@@ -258,28 +264,19 @@ describe("fitAssessmentSchema", () => {
 });
 
 describe("brandingSchema", () => {
-  it("rejects a phrase that's really a full sentence (over 60 chars)", () => {
-    const tooLong = "א".repeat(61);
-    const result = brandingSchema.safeParse({
-      ideal_client: tooLong,
-      problem_solved: "בעיה",
-      desired_outcome: "תוצאה",
-      unique_approach: "גישה",
-      credential: "ותק",
-      cta: "לתאם שיחה",
-    });
+  it("accepts a completely empty questionnaire (the AI works from the profile alone)", () => {
+    const result = brandingSchema.safeParse({});
+    expect(result.success).toBe(true);
+    expect(result.data?.tone).toBe("warm");
+  });
+
+  it("rejects an answer over 120 characters", () => {
+    const result = brandingSchema.safeParse({ ideal_client: "א".repeat(121) });
     expect(result.success).toBe(false);
   });
 
-  it("rejects a phrase under 3 characters", () => {
-    const result = brandingSchema.safeParse({
-      ideal_client: "אב",
-      problem_solved: "בעיה",
-      desired_outcome: "תוצאה",
-      unique_approach: "גישה",
-      credential: "ותק",
-      cta: "לתאם שיחה",
-    });
+  it("rejects an unknown tone", () => {
+    const result = brandingSchema.safeParse({ tone: "angry" });
     expect(result.success).toBe(false);
   });
 });

@@ -1,50 +1,89 @@
 "use client";
 
 import { useState } from "react";
+import { IDEA_CATEGORIES, type IdeaKey } from "@/lib/templates/idea-categories";
 
-type Content = {
-  uvp_statement: string | null;
-  website_text: string | null;
-  linkedin_text: string | null;
-  sales_pitch: string | null;
+export type Ideas = Partial<Record<IdeaKey, string[]>>;
+
+const TINTS: Record<IdeaKey, string> = {
+  slogans: "bg-sun-soft",
+  uvp_statement: "bg-sky-soft",
+  instagram_bio: "bg-lilac-soft",
+  website_text: "bg-mint-soft",
+  social_post: "bg-coral-soft",
+  sales_pitch: "bg-sun-soft",
 };
 
-const LABELS: Record<keyof Content, string> = {
-  uvp_statement: "הצהרת ערך (UVP)",
-  website_text: "טקסט לאתר",
-  linkedin_text: "טקסט ל-LinkedIn",
-  sales_pitch: "פיץ' מכירתי",
-};
-
-export function MarketingContentDisplay({ content }: { content: Content }) {
+// Shows the AI writing ideas grouped into tabs (slogans, bio, website...),
+// each idea in its own card with a one-click copy button.
+export function MarketingContentDisplay({ ideas }: { ideas: Ideas }) {
+  const categories = IDEA_CATEGORIES.filter((c) => (ideas[c.key]?.length ?? 0) > 0);
+  const [active, setActive] = useState<IdeaKey>(categories[0]?.key ?? "slogans");
   const [copied, setCopied] = useState<string | null>(null);
 
-  async function handleCopy(key: string, text: string) {
+  async function handleCopy(id: string, text: string) {
     await navigator.clipboard.writeText(text);
-    setCopied(key);
+    setCopied(id);
     setTimeout(() => setCopied(null), 1500);
   }
 
+  if (categories.length === 0) return null;
+  const current = IDEA_CATEGORIES.find((c) => c.key === active) ?? categories[0];
+  const list = ideas[current.key] ?? [];
+
   return (
     <div className="space-y-4">
-      {(Object.keys(LABELS) as (keyof Content)[]).map((key) => {
-        const text = content[key];
-        if (!text) return null;
-        return (
-          <div key={key} className="rounded-lg border border-gray-200 p-4">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium text-sm">{LABELS[key]}</h3>
+      <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1" role="tablist" aria-label="סוגי טקסטים">
+        {categories.map((c) => {
+          const isActive = c.key === current.key;
+          return (
+            <button
+              key={c.key}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => setActive(c.key)}
+              className={`shrink-0 rounded-full border-2 px-4 py-1.5 text-sm font-semibold transition ${
+                isActive
+                  ? "border-ink bg-ink text-white"
+                  : "border-ink/10 bg-white text-ink/70 hover:border-ink/40"
+              }`}
+            >
+              {c.label}
+            </button>
+          );
+        })}
+      </div>
+
+      <p className="text-xs text-ink/50">{current.hint} · {list.length} רעיונות</p>
+
+      <ul className="grid gap-3" role="tabpanel">
+        {list.map((text, i) => {
+          const id = `${current.key}-${i}`;
+          return (
+            <li
+              key={id}
+              className={`group relative rounded-2xl border-2 border-ink/10 ${TINTS[current.key]} p-4 pe-24 animate-pop-in`}
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <p className={`text-ink whitespace-pre-line ${current.key === "slogans" ? "text-lg font-bold" : "text-sm leading-relaxed"}`}>
+                {text}
+              </p>
               <button
-                onClick={() => handleCopy(key, text)}
-                className="text-xs text-slate-600 hover:text-blue-800 underline"
+                type="button"
+                onClick={() => handleCopy(id, text)}
+                className={`absolute top-3 left-3 rounded-full border-2 px-3 py-1 text-xs font-semibold transition ${
+                  copied === id
+                    ? "border-mint bg-mint text-white"
+                    : "border-ink bg-white text-ink hover:bg-sun"
+                }`}
               >
-                {copied === key ? "הועתק!" : "העתק"}
+                {copied === id ? "הועתק! ✓" : "העתקה"}
               </button>
-            </div>
-            <p className="text-sm text-gray-700 whitespace-pre-line">{text}</p>
-          </div>
-        );
-      })}
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }

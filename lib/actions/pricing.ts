@@ -1,13 +1,18 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { pricingRequestSchema } from "@/lib/validations/pricing";
+import {
+  pricingRequestSchema,
+  pricingSearchSchema,
+} from "@/lib/validations/pricing";
+import { researchAndSavePricingOptions } from "@/lib/pricing/save-options";
+import { describeAiError } from "@/lib/ai/claude";
 import { revalidatePath } from "next/cache";
 
 export type ActionState = {
   success: boolean;
   error?: string;
-  recommendation?: { id: string; min: number; max: number; label: string };
+  recommendation?: { id: string; min: number; max: number; label: string; source: string | null };
 };
 
 export async function getPricingRecommendation(
@@ -45,12 +50,26 @@ export async function getPricingRecommendation(
     return { success: false, error: "פרופיל עסק לא נמצא" };
   }
 
-  const { data: pricingRow } = await supabase
-    .from("market_pricing_data")
-    .select("project_type_label, price_min, price_max")
-    .eq("profession", businessProfile.profession)
+  // Options found by the AI market search for this business come first;
+  // the old fixed per-profession table is only a fallback for businesses
+  // created before the search existed.
+  const { data: ownOption } = await supabase
+    .from("business_pricing_options")
+    .select("project_type_label, price_min, price_max, source")
+    .eq("business_profile_id", businessProfile.id)
     .eq("project_type", parsed.data.project_type)
     .maybeSingle();
+
+  const pricingRow =
+    ownOption ??
+    (
+      await supabase
+        .from("market_pricing_data")
+        .select("project_type_label, price_min, price_max, source")
+        .eq("profession", businessProfile.profession)
+        .eq("project_type", parsed.data.project_type)
+        .maybeSingle()
+    ).data;
 
   if (!pricingRow) {
     return { success: false, error: "לא נמצאו נתוני תמחור עבור הבחירה הזו" };
@@ -103,6 +122,69 @@ export async function getPricingRecommendation(
       min: pricingRow.price_min,
       max: pricingRow.price_max,
       label: pricingRow.project_type_label,
+      source: pricingRow.source ?? null,
     },
   };
+}
+
+export type SearchState = {
+  success: boolean;
+  error?: string;
+  added?: number;
+};
+
+// Runs the AI market search again from the pricing advisor page - either a
+// full refresh of the options list, or a search for one specific service the
+// owner typed in ("couldn't find what you sell? search for it").
+export async function searchPricingOptions(
+  _prevState: SearchState,
+  formData: FormData
+): Promise<SearchState> {
+  const parsed = pricingSearchSchema.safeParse({
+    business_profile_id: formData.get("business_profile_id"),
+    service_query: formData.get("service_query") ?? "",
+  });
+
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: "יש להתחבר מחדש" };
+  }
+
+  const { data: businessProfile } = await supabase
+    .from("business_profiles")
+    .select("id, business_name, profession, business_description, years_experience")
+    .eq("id", parsed.data.business_profile_id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!businessProfile) {
+    return { success: false, error: "פרופיל עסק לא נמצא" };
+  }
+
+  const serviceQuery = parsed.data.service_query || undefined;
+
+  try {
+    const added = await researchAndSavePricingOptions(
+      supabase,
+      businessProfile.id,
+      businessProfile,
+      { serviceQuery, replace: !serviceQuery }
+    );
+    if (added === 0) {
+      return { success: false, error: "לא מצאנו מחירים מתאימים - אפשר לנסות לנסח אחרת" };
+    }
+    revalidatePath("/pricing-advisor");
+    return { success: true, added };
+  } catch (error) {
+    console.error("pricing market search failed:", describeAiError(error));
+    return { success: false, error: "החיפוש לא הצליח כרגע, כדאי לנסות שוב בעוד רגע" };
+  }
 }

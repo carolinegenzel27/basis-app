@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { professionLabel } from "@/lib/professions";
 
 // Public, unauthenticated page - this is what a business owner sends to
 // potential clients. Reads from the "public_business_profiles" view (see
@@ -9,11 +10,6 @@ import { createClient } from "@/lib/supabase/server";
 // route lives outside the (private) route group.
 export const runtime = "nodejs";
 
-const PROFESSION_LABELS: Record<string, string> = {
-  driving_instructor: "מורה לנהיגה",
-  dietitian: "דיאטן/ית",
-  private_chef: "שף/ית פרטי/ת",
-};
 
 type PublicProfile = {
   business_profile_id: string;
@@ -81,7 +77,7 @@ export async function generateMetadata({
   }
 
   return {
-    title: `${profile.business_name} | ${PROFESSION_LABELS[profile.profession] ?? profile.profession}`,
+    title: `${profile.business_name} | ${professionLabel(profile.profession)}`,
     description: profile.uvp_statement ?? profile.about_me ?? undefined,
   };
 }
@@ -104,8 +100,7 @@ export default async function PublicBusinessPage({
   // uploaded files, just rendered according to what they actually are.
   const imageDocuments = documents.filter((doc) => isImageFile(doc.file_name));
   const otherDocuments = documents.filter((doc) => !isImageFile(doc.file_name));
-  const professionLabel =
-    PROFESSION_LABELS[profile.profession] ?? profile.profession;
+  const professionText = professionLabel(profile.profession);
 
   return (
     <div className="min-h-screen bg-blue-50">
@@ -122,7 +117,7 @@ export default async function PublicBusinessPage({
 
           <div>
             <p className="text-sm font-medium text-slate-500">
-              {professionLabel}
+              {professionText}
             </p>
             <h1 className="text-3xl font-bold text-blue-950 mt-1">
               {profile.business_name}

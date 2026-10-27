@@ -2,9 +2,19 @@ import { z } from "zod";
 
 export const businessProfileSchema = z.object({
   business_name: z.string().min(2, "יש להזין שם עסק (לפחות 2 תווים)"),
-  profession: z.enum(["driving_instructor", "dietitian", "private_chef"], {
-    message: "יש לבחור תחום עיסוק",
-  }),
+  // Free text on purpose - any kind of small business (baker, nail artist,
+  // photographer...). The AI market search reads it as-is.
+  profession: z
+    .string()
+    .trim()
+    .min(2, "יש להזין תחום עיסוק")
+    .max(60, "תחום עיסוק ארוך מדי - עד 60 תווים"),
+  business_description: z
+    .string()
+    .trim()
+    .max(300, "תיאור ארוך מדי - עד 300 תווים")
+    .optional()
+    .default(""),
   years_experience: z.coerce
     .number()
     .int()

@@ -1,20 +1,24 @@
 import { z } from "zod";
 
-// Short phrases, not full sentences - this is what keeps the generated
-// marketing text (branding-templates.ts) reading naturally instead of
-// stitching together mismatched full sentences.
-const shortPhrase = z
+// Every answer is optional now - the AI can write ideas from the business
+// profile alone, and each extra answer just makes the ideas more personal.
+const optionalAnswer = z
   .string()
-  .min(3, "יש למלא שדה זה")
-  .max(60, "יש לענות בביטוי קצר - עד 60 תווים, לא משפט שלם");
+  .trim()
+  .max(120, "יש לענות בקצרה - עד 120 תווים")
+  .optional()
+  .default("");
+
+export const BRANDING_TONES = ["warm", "professional", "playful", "luxury"] as const;
 
 export const brandingSchema = z.object({
-  ideal_client: shortPhrase,
-  problem_solved: shortPhrase,
-  desired_outcome: shortPhrase,
-  unique_approach: shortPhrase,
-  credential: shortPhrase,
-  cta: shortPhrase,
+  ideal_client: optionalAnswer,
+  problem_solved: optionalAnswer,
+  desired_outcome: optionalAnswer,
+  unique_approach: optionalAnswer,
+  credential: optionalAnswer,
+  cta: optionalAnswer,
+  tone: z.enum(BRANDING_TONES).optional().default("warm"),
 });
 
 export type BrandingAnswers = z.infer<typeof brandingSchema>;

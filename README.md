@@ -6,8 +6,8 @@ Final project — Internet Technologies (Fullstack) course — Caroline Genzel
 
 ## What is Basis
 
-Basis is a leverage platform for small business owners and freelancers -
-driving instructors, dietitians, and private chefs. A small business owner
+Basis is a leverage platform for small business owners and freelancers of
+any kind - bakers, nail artists, photographers, trainers, and so on. A small business owner
 is usually very good at their craft, but weak on marketing, pricing, and
 professional paperwork. The app takes minimal input from them (a short
 questionnaire, filled out once) and turns it into professional
@@ -18,13 +18,18 @@ clients.
 ## Main Features
 
 - Secure sign-up and login (Supabase Auth)
-- Onboarding questionnaire that creates a business profile, including a
-  unique public URL (slug)
+- Onboarding questionnaire for any kind of business (free-text profession)
+  that creates a business profile, including a unique public URL (slug)
+- AI market search (Claude + web search) right after onboarding, which builds
+  a price list tailored to the business - cakes for a baker, gel polish for
+  a nail artist
 - Short fit-assessment questionnaire that recommends whether to focus on
   the pricing advisor, branding, or both
-- Branding questionnaire that automatically generates 4 marketing content
-  pieces (value proposition, website text, LinkedIn text, sales pitch)
-- Pricing advisor based on real market data by profession and project type
+- AI branding ideas (Claude): several ready-to-copy options each for
+  slogans, value proposition, Instagram bio, website text, social posts and
+  a sales pitch
+- Pricing advisor based on the AI market search, with search for any
+  specific service
 - Quote creation and PDF export, with correct Hebrew rendering
 - Public business page (`/p/[slug]`) with a photo, free text, and
   downloadable documents - accessible without logging in
@@ -36,6 +41,7 @@ clients.
 - **Tailwind CSS v4**
 - **Zod** - server-side validation on every write action
 - **@react-pdf/renderer** - server-side PDF generation (quotes)
+- **Anthropic SDK (Claude)** - AI market price search and branding ideas
 - **Vitest** - unit tests (see `TESTING.md`)
 - **Playwright** - end-to-end tests (see `TESTING.md`)
 - **Vercel** - hosting and deployment
@@ -71,6 +77,7 @@ npm install
    supabase/add_public_branding_text.sql
    supabase/add_indexes.sql
    supabase/fix_public_access.sql
+   supabase/any_business_ai.sql
    ```
 
 3. Under **Settings → API**, copy the **Project URL**, the **anon
@@ -83,12 +90,15 @@ npm install
 cp .env.local.example .env.local
 ```
 
-Fill in the three values from step 2:
+Fill in the three values from step 2, plus an Anthropic API key (from
+[platform.claude.com](https://platform.claude.com)) for the AI market search
+and branding ideas:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
+ANTHROPIC_API_KEY=
 ```
 
 `.env.local` is already in `.gitignore` - never commit real values in it.
@@ -140,7 +150,7 @@ npm run lint
 
 1. Push the code to GitHub, then import it as a New Project on
    [Vercel](https://vercel.com).
-2. Add the same three environment variables from step 3 under
+2. Add the same four environment variables from step 3 under
    **Settings → Environment Variables** in the Vercel project.
 3. Deploy - Vercel builds and redeploys automatically on every push.
 4. **Final, critical step:** in Supabase, under **Authentication → URL
@@ -170,7 +180,9 @@ lib/
   actions/        Server Actions - every write action goes through them
   validations/    Zod schemas - the same schemas used client- and
                    server-side
-  templates/      Branding questions and the rule-based content engine
+  templates/      Branding questions, tones and idea categories
+  ai/             Claude calls - market price search and branding ideas
+  pricing/        Saves the market search results as pricing options
   fit-assessment/ Questionnaire questions and scoring logic
   pdf/            The PDF document and the Hebrew bidi-text fix
   supabase/       Client creation (browser, server, admin)

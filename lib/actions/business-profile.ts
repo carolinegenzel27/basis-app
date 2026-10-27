@@ -3,6 +3,8 @@
 import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { businessProfileSchema } from "@/lib/validations/business-profile";
+import { researchAndSavePricingOptions } from "@/lib/pricing/save-options";
+import { describeAiError } from "@/lib/ai/claude";
 
 export type ActionState = {
   success: boolean;
@@ -16,6 +18,7 @@ export async function createBusinessProfile(
   const parsed = businessProfileSchema.safeParse({
     business_name: formData.get("business_name"),
     profession: formData.get("profession"),
+    business_description: formData.get("business_description") ?? "",
     years_experience: formData.get("years_experience"),
     team_size: formData.get("team_size"),
     slug: formData.get("slug"),
@@ -63,17 +66,34 @@ export async function createBusinessProfile(
     finalSlug = `${baseSlug}-${attempt}`;
   }
 
-  const { error } = await supabase.from("business_profiles").insert({
-    user_id: user.id,
-    business_name: parsed.data.business_name,
-    profession: parsed.data.profession,
-    years_experience: parsed.data.years_experience,
-    team_size: parsed.data.team_size,
-    slug: finalSlug,
-  });
+  const { data: inserted, error } = await supabase
+    .from("business_profiles")
+    .insert({
+      user_id: user.id,
+      business_name: parsed.data.business_name,
+      profession: parsed.data.profession,
+      business_description: parsed.data.business_description || null,
+      years_experience: parsed.data.years_experience,
+      team_size: parsed.data.team_size,
+      slug: finalSlug,
+    })
+    .select("id")
+    .single();
 
   if (error) {
     return { success: false, error: error.message };
+  }
+
+  // The "search of the business": find what businesses like this one charge,
+  // so the pricing advisor opens with options that fit (cakes for a baker,
+  // gel polish for a nail artist). Never blocks onboarding - if the search
+  // fails, the pricing advisor page offers to run it again.
+  try {
+    await researchAndSavePricingOptions(supabase, inserted.id, parsed.data, {
+      replace: true,
+    });
+  } catch (researchError) {
+    console.error("pricing market search failed:", describeAiError(researchError));
   }
 
   // First stop after onboarding is the fit assessment, not the dashboard -

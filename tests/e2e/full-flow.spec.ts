@@ -29,7 +29,7 @@ test.describe("signup through dashboard", () => {
     await signUpAndReachOnboarding(page, email, TEST_PASSWORD);
 
     await page.getByLabel("שם העסק").fill(businessName);
-    await page.getByLabel("תחום עיסוק").selectOption("driving_instructor");
+    await page.getByLabel("תחום עיסוק").fill("מורה לנהיגה");
     await page.getByLabel("שנות ותק").fill("5");
     await page.getByLabel("גודל צוות").fill("1");
     await page.getByLabel("כתובת הדף הציבורי שלך").fill(slug);
@@ -38,7 +38,9 @@ test.describe("signup through dashboard", () => {
     // fit assessment - createBusinessProfile always redirects here first
     // (lib/actions/business-profile.ts), regardless of whether the
     // dashboard would also redirect here on its own.
-    await page.waitForURL(/\/fit-assessment/, { timeout: 10_000 });
+    test.setTimeout(180_000);
+    // Onboarding now runs the AI market search first - allow up to a minute+.
+    await page.waitForURL(/\/fit-assessment/, { timeout: 120_000 });
 
     for (let i = 0; i < FIT_QUESTIONS.length; i++) {
       const isLast = i === FIT_QUESTIONS.length - 1;

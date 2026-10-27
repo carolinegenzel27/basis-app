@@ -23,12 +23,15 @@ import {
 
 async function fillOnboarding(page: Page, businessName: string, slug: string) {
   await page.getByLabel("שם העסק").fill(businessName);
-  await page.getByLabel("תחום עיסוק").selectOption("driving_instructor");
+  await page.getByLabel("תחום עיסוק").fill("מורה לנהיגה");
   await page.getByLabel("שנות ותק").fill("5");
   await page.getByLabel("גודל צוות").fill("1");
   await page.getByLabel("כתובת הדף הציבורי שלך").fill(slug);
   await page.getByRole("button", { name: "המשך לשאלון התאמה" }).click();
-  await page.waitForURL(/\/fit-assessment/, { timeout: 10_000 });
+  test.setTimeout(180_000);
+  // Onboarding now runs the AI market search before redirecting - allow
+  // for it (it never blocks the redirect, but can take up to a minute).
+  await page.waitForURL(/\/fit-assessment/, { timeout: 120_000 });
 }
 
 test.describe("onboarding slug collision", () => {
