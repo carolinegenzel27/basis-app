@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { createQuote, type ActionState } from "@/lib/actions/quotes";
 import { SubmitButton } from "@/components/ui/SubmitButton";
+import { ui } from "@/lib/ui";
 
 const initialState: ActionState = { success: false };
 
@@ -25,9 +26,12 @@ export function QuoteForm({
 
   if (state.success) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-        <p className="text-sm text-green-700">הצעת המחיר נשמרה!</p>
-        <a href="/quotes" className="text-sm text-blue-950 underline mt-2 inline-block">
+      <div className="text-center space-y-4 py-4" role="status">
+        <span className="mx-auto flex w-14 h-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 text-2xl" aria-hidden="true">
+          ✓
+        </span>
+        <p className="text-lg font-bold">הצעת המחיר נשמרה!</p>
+        <a href="/quotes" className={ui.btnPrimary}>
           חזרה לרשימת ההצעות
         </a>
       </div>
@@ -35,14 +39,14 @@ export function QuoteForm({
   }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       <input type="hidden" name="business_profile_id" value={businessProfileId} />
       {pricingRecommendationId && (
         <input type="hidden" name="pricing_recommendation_id" value={pricingRecommendationId} />
       )}
 
       <div>
-        <label htmlFor="document_title" className="block text-sm font-medium mb-1">
+        <label htmlFor="document_title" className={ui.label}>
           כותרת המסמך (לא חובה)
         </label>
         <input
@@ -52,15 +56,15 @@ export function QuoteForm({
           maxLength={60}
           placeholder="הצעת מחיר"
           defaultValue={defaultDocumentTitle}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
-        <p className="text-xs text-gray-400 mt-1">
+        <p className={ui.hint}>
           בלי מילוי, ה-PDF יוצג עם הכותרת &quot;הצעת מחיר&quot;
         </p>
       </div>
 
       <div>
-        <label htmlFor="client_name" className="block text-sm font-medium mb-1">
+        <label htmlFor="client_name" className={ui.label}>
           שם לקוח
         </label>
         <input
@@ -68,12 +72,12 @@ export function QuoteForm({
           name="client_name"
           type="text"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
       </div>
 
       <div>
-        <label htmlFor="client_email" className="block text-sm font-medium mb-1">
+        <label htmlFor="client_email" className={ui.label}>
           אימייל לקוח
         </label>
         <input
@@ -81,12 +85,12 @@ export function QuoteForm({
           name="client_email"
           type="email"
           required
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
       </div>
 
       <div>
-        <label htmlFor="project_description" className="block text-sm font-medium mb-1">
+        <label htmlFor="project_description" className={ui.label}>
           תיאור הפרויקט
         </label>
         <textarea
@@ -95,12 +99,12 @@ export function QuoteForm({
           rows={3}
           maxLength={300}
           defaultValue={defaultProjectDescription}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
       </div>
 
       <div>
-        <label htmlFor="price" className="block text-sm font-medium mb-1">
+        <label htmlFor="price" className={ui.label}>
           מחיר (₪)
         </label>
         <input
@@ -111,14 +115,14 @@ export function QuoteForm({
           step="1"
           required
           defaultValue={defaultPrice}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
         {(defaultPrice !== undefined || defaultProjectDescription) && (
-          <p className="text-xs text-gray-400 mt-1">מולא אוטומטית - אפשר לערוך</p>
+          <p className={ui.hint}>מולא אוטומטית - אפשר לערוך</p>
         )}
         {marketRange && (
-          <p className="text-xs text-slate-500 mt-1">
-            אנחנו ממליצים לגבות בין{" "}
+          <p className="mt-2 rounded-lg bg-sun-soft px-3 py-2 text-sm text-ink/80">
+            💡 אנחנו ממליצים לגבות בין{" "}
             {marketRange.min.toLocaleString("he-IL")}-
             {marketRange.max.toLocaleString("he-IL")} ₪ עבור שירות בודד מהסוג
             הזה.
@@ -126,7 +130,7 @@ export function QuoteForm({
         )}
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={ui.error} role="alert">{state.error}</p>}
       <SubmitButton>שמירת הצעת מחיר</SubmitButton>
     </form>
   );

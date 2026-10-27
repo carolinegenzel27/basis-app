@@ -43,10 +43,10 @@ export function MarketingContentDisplay({ ideas }: { ideas: Ideas }) {
               role="tab"
               aria-selected={isActive}
               onClick={() => setActive(c.key)}
-              className={`shrink-0 rounded-full border-2 px-4 py-1.5 text-sm font-semibold transition ${
+              className={`shrink-0 rounded-lg px-4 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30 ${
                 isActive
-                  ? "border-ink bg-ink text-white"
-                  : "border-ink/10 bg-white text-ink/70 hover:border-ink/40"
+                  ? "bg-ink text-white"
+                  : "bg-ink/[0.04] text-ink/70 hover:bg-ink/[0.08] hover:text-ink"
               }`}
             >
               {c.label}
@@ -63,7 +63,7 @@ export function MarketingContentDisplay({ ideas }: { ideas: Ideas }) {
           return (
             <li
               key={id}
-              className={`group relative rounded-2xl border-2 border-ink/10 ${TINTS[current.key]} p-4 pe-24 animate-pop-in`}
+              className={`group relative rounded-xl border border-ink/[0.06] ${TINTS[current.key]} p-4 sm:p-5 pe-24 animate-fade-up`}
               style={{ animationDelay: `${i * 60}ms` }}
             >
               <p className={`text-ink whitespace-pre-line ${current.key === "slogans" ? "text-lg font-bold" : "text-sm leading-relaxed"}`}>
@@ -72,10 +72,10 @@ export function MarketingContentDisplay({ ideas }: { ideas: Ideas }) {
               <button
                 type="button"
                 onClick={() => handleCopy(id, text)}
-                className={`absolute top-3 left-3 rounded-full border-2 px-3 py-1 text-xs font-semibold transition ${
+                className={`absolute top-3 left-3 rounded-lg px-3 py-1.5 text-xs font-semibold shadow-sm transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30 ${
                   copied === id
-                    ? "border-mint bg-mint text-white"
-                    : "border-ink bg-white text-ink hover:bg-sun"
+                    ? "bg-emerald-600 text-white"
+                    : "bg-white text-ink border border-ink/10 hover:bg-ink hover:text-white"
                 }`}
               >
                 {copied === id ? "הועתק! ✓" : "העתקה"}

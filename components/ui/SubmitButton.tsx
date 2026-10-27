@@ -1,6 +1,7 @@
 "use client";
 
 import { useFormStatus } from "react-dom";
+import { ui } from "@/lib/ui";
 
 export function SubmitButton({
   children,
@@ -12,11 +13,10 @@ export function SubmitButton({
   const { pending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="w-full rounded-xl bg-blue-800 px-4 py-2.5 text-white font-semibold shadow-[0_3px_0_#1e1b4b] hover:bg-blue-900 active:translate-y-[2px] active:shadow-none disabled:opacity-50 disabled:cursor-not-allowed transition"
-    >
+    <button type="submit" disabled={pending} className={`${ui.btnPrimary} w-full`}>
+      {pending && (
+        <span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin" aria-hidden="true" />
+      )}
       {pending ? pendingText : children}
     </button>
   );

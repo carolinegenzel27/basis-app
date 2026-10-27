@@ -15,7 +15,7 @@ function DeleteSubmit() {
     <button
       type="submit"
       disabled={pending}
-      className="text-xs text-red-600 underline shrink-0 disabled:opacity-50"
+      className="text-sm font-semibold text-red-600 hover:underline shrink-0 disabled:opacity-50"
     >
       {pending ? "מוחק..." : "מחיקה"}
     </button>
@@ -31,7 +31,7 @@ export function DeleteDocumentButton({ documentId }: { documentId: string }) {
     <form action={formAction} className="flex flex-col items-end gap-1 shrink-0">
       <input type="hidden" name="document_id" value={documentId} />
       <DeleteSubmit />
-      {state.error && <p className="text-xs text-red-600">{state.error}</p>}
+      {state.error && <p className="text-xs text-red-600" role="alert">{state.error}</p>}
     </form>
   );
 }

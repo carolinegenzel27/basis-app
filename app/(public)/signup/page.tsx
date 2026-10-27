@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { SignUpForm } from "@/components/forms/SignUpForm";
 import { AuthShell } from "@/components/layout/AuthShell";
+import { ui } from "@/lib/ui";
 
 export default function SignUpPage() {
   return (
     <AuthShell
-      title="הרשמה"
-      subtitle="פותחים חשבון בחינם - לכל סוג של עסק"
+      title="בואו נבנה את העסק שלך"
+      subtitle="חשבון חינמי, לכל סוג של עסק. לוקח פחות מדקה."
       footer={
         <>
           כבר יש חשבון?{" "}
-          <Link href="/login" className="text-coral font-bold underline underline-offset-4">
+          <Link href="/login" className={ui.link}>
             להתחברות
           </Link>
         </>

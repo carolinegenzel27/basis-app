@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { FitAssessmentQuestionnaire } from "@/components/forms/FitAssessmentQuestionnaire";
+import { Logo } from "@/components/brand/Logo";
+import { ui } from "@/lib/ui";
 
 export default async function FitAssessmentPage() {
   const supabase = await createClient();
@@ -29,15 +31,19 @@ export default async function FitAssessmentPage() {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-8 space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-blue-950">שאלון התאמה</h1>
-        <p className="text-gray-600 mt-1">
+    <div className={`${ui.pageNarrow} space-y-8`}>
+      <Logo href="/fit-assessment" />
+      <div className="animate-fade-up">
+        <p className="text-sm font-semibold text-blue-700">שלב 2 מתוך 3</p>
+        <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight">שאלון התאמה</h1>
+        <p className={`${ui.muted} mt-2 text-lg`}>
           כמה שאלות קצרות שיעזרו לנו להמליץ לך במה כדאי להתחיל.
         </p>
       </div>
 
-      <FitAssessmentQuestionnaire businessProfileId={businessProfile.id} />
+      <div className={`${ui.card} ${ui.cardPad}`}>
+        <FitAssessmentQuestionnaire businessProfileId={businessProfile.id} />
+      </div>
     </div>
   );
 }

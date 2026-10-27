@@ -4,6 +4,7 @@ import { useState, useActionState } from "react";
 import { submitFitAssessment, type ActionState } from "@/lib/actions/fit-assessment";
 import { FIT_QUESTIONS, LIKERT_OPTIONS } from "@/lib/fit-assessment/questions";
 import { SubmitButton } from "@/components/ui/SubmitButton";
+import { ui } from "@/lib/ui";
 
 const initialState: ActionState = { success: false };
 
@@ -14,13 +15,13 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
 
   if (state.success) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-blue-950">ההמלצה שלנו</h2>
-        <p className="text-gray-700">{state.resultMessage}</p>
-        <a
-          href="/dashboard"
-          className="inline-block rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium hover:bg-blue-900"
-        >
+      <div className="space-y-4 text-center py-4 animate-fade-up">
+        <span className="mx-auto flex w-14 h-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 text-2xl" aria-hidden="true">
+          ✓
+        </span>
+        <h2 className={ui.h2}>ההמלצה שלנו</h2>
+        <p className="text-ink/70 text-lg leading-relaxed">{state.resultMessage}</p>
+        <a href="/dashboard" className={ui.btnPrimary}>
           המשך למסך הבית
         </a>
       </div>
@@ -29,6 +30,7 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
 
   const isLastStep = step === FIT_QUESTIONS.length - 1;
   const currentAnswer = answers[step];
+  const progress = ((step + (currentAnswer ? 1 : 0)) / FIT_QUESTIONS.length) * 100;
 
   function selectAnswer(value: number) {
     const next = [...answers];
@@ -38,27 +40,44 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
 
   return (
     <div className="space-y-6">
-      <div className="text-sm text-gray-500">
-        שאלה {step + 1} מתוך {FIT_QUESTIONS.length}
+      <div>
+        <div className="flex items-center justify-between text-sm font-semibold text-ink/55">
+          <span>
+            שאלה {step + 1} מתוך {FIT_QUESTIONS.length}
+          </span>
+        </div>
+        <div
+          className="mt-2 h-2 rounded-full bg-ink/[0.06] overflow-hidden"
+          role="progressbar"
+          aria-label="התקדמות בשאלון"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progress)}
+        >
+          <div className="h-full rounded-full bg-gradient-to-l from-blue-600 to-lilac transition-all duration-500" style={{ width: `${progress}%` }} />
+        </div>
       </div>
 
-      <p className="text-lg font-medium">{FIT_QUESTIONS[step].text}</p>
+      <p className="text-xl font-bold leading-snug" id="question">
+        {FIT_QUESTIONS[step].text}
+      </p>
 
-      <div className="space-y-2">
-        {LIKERT_OPTIONS.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => selectAnswer(opt.value)}
-            className={`w-full text-right rounded-lg border px-4 py-2 transition ${
-              currentAnswer === opt.value
-                ? "border-blue-800 bg-blue-800 text-white"
-                : "border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
+      <div className="grid gap-2.5" role="radiogroup" aria-labelledby="question">
+        {LIKERT_OPTIONS.map((opt) => {
+          const selected = currentAnswer === opt.value;
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              role="radio"
+              aria-checked={selected}
+              onClick={() => selectAnswer(opt.value)}
+              className={`w-full ${selected ? ui.optionActive : ui.option} focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
       </div>
 
       <div className="flex items-center justify-between pt-2">
@@ -66,7 +85,7 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
           type="button"
           disabled={step === 0}
           onClick={() => setStep((s) => s - 1)}
-          className="text-sm text-gray-500 disabled:opacity-0"
+          className={`${ui.btnSecondary} disabled:invisible`}
         >
           חזרה
         </button>
@@ -76,16 +95,12 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
             type="button"
             disabled={currentAnswer === 0}
             onClick={() => setStep((s) => s + 1)}
-            className="rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className={ui.btnPrimary}
           >
             הבא
           </button>
         ) : currentAnswer === 0 ? (
-          <button
-            type="button"
-            disabled
-            className="rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium opacity-50 cursor-not-allowed"
-          >
+          <button type="button" disabled className={ui.btnPrimary}>
             קבלת המלצה
           </button>
         ) : (
@@ -97,7 +112,7 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
         )}
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={ui.error} role="alert">{state.error}</p>}
     </div>
   );
 }

@@ -2,6 +2,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicLinkCopyButton } from "@/components/ui/PublicLinkCopyButton";
+import { ui } from "@/lib/ui";
+import {
+  Megaphone,
+  PriceTag,
+  QuoteDoc,
+  Storefront,
+} from "@/components/illustrations/BusinessIcons";
 
 // Sign-out and the top-level nav links now live in the shared Navbar
 // (app/(private)/layout.tsx) - this page only needs its own content.
@@ -9,21 +16,29 @@ const FEATURES = [
   {
     href: "/branding",
     title: "מיתוג",
+    Icon: Megaphone,
+    tint: "bg-coral-soft",
     description: "רעיונות כתיבה עם AI - סלוגנים, ביו לאינסטגרם, טקסט לאתר ופוסטים, מוכנים להעתקה.",
   },
   {
     href: "/pricing-advisor",
     title: "יועץ תמחור",
+    Icon: PriceTag,
+    tint: "bg-sun-soft",
     description: "טווח מחיר מומלץ לשירותים שלך, לפי חיפוש מחירים אמיתי בשוק.",
   },
   {
     href: "/quotes",
     title: "הצעות מחיר",
+    Icon: QuoteDoc,
+    tint: "bg-sky-soft",
     description: "יצירת הצעות מחיר מקצועיות והורדה כ-PDF, תוך שנייה.",
   },
   {
     href: "/public-profile",
     title: "הכנת עמוד ציבורי",
+    Icon: Storefront,
+    tint: "bg-mint-soft",
     description: "טקסט, תמונה, ומסמכים שיוצגו בעמוד שאפשר לשלוח ללקוחות.",
   },
 ];
@@ -62,14 +77,15 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10 space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-blue-950">
+    <div className={`${ui.page} space-y-8`}>
+      <div className="animate-fade-up">
+        <p className="text-sm font-semibold text-blue-700">מסך הבית</p>
+        <h1 className="mt-1 text-3xl sm:text-4xl font-extrabold tracking-tight">
           {businessProfile?.business_name
             ? `שלום, ${businessProfile.business_name}`
             : "מסך הבית"}
         </h1>
-        <p className="text-gray-500 mt-1">מה עושים היום?</p>
+        <p className={`${ui.muted} mt-2 text-lg`}>מה עושים היום?</p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
@@ -77,22 +93,33 @@ export default async function DashboardPage() {
           <Link
             key={feature.href}
             href={feature.href}
-            className="block rounded-xl border border-gray-200 bg-white p-5 hover:border-blue-300 hover:shadow-sm transition"
+            className={`${ui.card} group p-6 flex items-start gap-4 hover:shadow-lift hover:-translate-y-0.5 transition duration-300 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30`}
           >
-            <h2 className="font-semibold text-blue-950">{feature.title}</h2>
-            <p className="text-sm text-gray-500 mt-1">{feature.description}</p>
+            <span className={`w-14 h-14 rounded-2xl ${feature.tint} flex items-center justify-center shrink-0`} aria-hidden="true">
+              <feature.Icon className="w-10 h-10" />
+            </span>
+            <span className="flex-1">
+              <span className="flex items-center justify-between">
+                <span className="text-lg font-bold">{feature.title}</span>
+                <span className="text-ink/30 group-hover:text-ink group-hover:-translate-x-1 transition" aria-hidden="true">←</span>
+              </span>
+              <span className="block text-ink/60 mt-1 leading-relaxed">{feature.description}</span>
+            </span>
           </Link>
         ))}
       </div>
 
       {businessProfile?.slug && (
-        <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-2">
-          <p className="text-sm font-medium text-blue-950">הדף הציבורי שלך</p>
-          <p className="text-xs text-gray-500">
-            הלינק לכרטיס הביקור הדיגיטלי שלך, ניתן לשלוח את קישור זה לכל
-            לקוח פוטנציאלי בשניות.
-          </p>
-          <PublicLinkCopyButton slug={businessProfile.slug} />
+        <div className="relative overflow-hidden rounded-2xl bg-ink text-white p-6 sm:p-7">
+          <div className="pointer-events-none absolute -top-16 -left-10 w-64 h-64 rounded-full bg-blue-500/30 blur-3xl" aria-hidden="true" />
+          <div className="relative space-y-3">
+            <p className="text-lg font-bold">הדף הציבורי שלך</p>
+            <p className="text-white/70">
+              כרטיס הביקור הדיגיטלי של העסק - אפשר לשלוח את הקישור לכל לקוח
+              פוטנציאלי בשניות.
+            </p>
+            <PublicLinkCopyButton slug={businessProfile.slug} tone="light" />
+          </div>
         </div>
       )}
     </div>

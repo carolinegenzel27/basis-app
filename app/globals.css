@@ -11,9 +11,9 @@
   --foreground: #0f172a;
 }
 
-/* Fresh, playful accent palette used by the welcome / onboarding pages and
-   the illustrations. Brand blue (blue-800 / blue-950) stays the main color;
-   these are the "fun" accents around it. Usable as bg-coral, text-ink, etc. */
+/* Design tokens. Ink (deep navy) is the main brand color - text and primary
+   buttons; the soft tints sit behind illustrations; coral / sun / lilac are
+   small accents. Shared component classes live in lib/ui.ts. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -22,7 +22,8 @@
 
 @theme {
   --color-ink: #1e1b4b;
-  --color-cream: #fff8ef;
+  --color-ink-soft: #2e2a6b;
+  --color-cream: #faf8f5;
   --color-coral: #ff7a59;
   --color-coral-soft: #ffe1d6;
   --color-sun: #ffc93c;
@@ -38,6 +39,12 @@
   --animate-float-slow: float 9s ease-in-out infinite;
   --animate-wiggle: wiggle 2.4s ease-in-out infinite;
   --animate-pop-in: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-marquee: marquee 60s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 60s linear infinite;
+
+  --shadow-card: 0 1px 2px rgba(20, 18, 56, 0.04), 0 12px 32px -16px rgba(20, 18, 56, 0.18);
+  --shadow-lift: 0 2px 4px rgba(20, 18, 56, 0.04), 0 24px 48px -20px rgba(20, 18, 56, 0.28);
 
   @keyframes float {
     0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
@@ -46,6 +53,20 @@
   @keyframes wiggle {
     0%, 100% { transform: rotate(-6deg); }
     50% { transform: rotate(6deg); }
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  /* RTL: the duplicated copy of a marquee track sits to the LEFT of the
+     original, so sliding right by half the track brings it into view. */
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(50%); }
+  }
+  @keyframes marquee-reverse {
+    from { transform: translateX(50%); }
+    to { transform: translateX(0); }
   }
   @keyframes pop-in {
     from { opacity: 0; transform: translateY(12px) scale(0.96); }

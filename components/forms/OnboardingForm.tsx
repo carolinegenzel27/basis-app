@@ -7,6 +7,7 @@ import {
 } from "@/lib/actions/business-profile";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 import { AiWorkingOverlay } from "@/components/ui/AiWorkingOverlay";
+import { ui } from "@/lib/ui";
 import {
   Camera,
   Cupcake,
@@ -62,9 +63,8 @@ const MORE_SUGGESTIONS = [
   "הנהלת חשבונות",
 ];
 
-const labelClass = "block font-semibold mb-2";
-const inputClass =
-  "w-full rounded-2xl border-2 border-ink/15 bg-white px-4 py-3 text-lg focus:outline-none focus:border-blue-700 focus:ring-4 focus:ring-blue-700/10 placeholder:text-ink/35 transition";
+const labelClass = ui.label;
+const inputClass = ui.input;
 
 export function OnboardingForm() {
   const [state, formAction] = useActionState(createBusinessProfile, initialState);
@@ -105,8 +105,8 @@ export function OnboardingForm() {
           <label htmlFor="slug" className={labelClass}>
             כתובת הדף הציבורי שלך
           </label>
-          <div className="flex items-stretch rounded-2xl border-2 border-ink/15 bg-white focus-within:border-blue-700 focus-within:ring-4 focus-within:ring-blue-700/10 overflow-hidden" dir="ltr">
-            <span className="flex items-center bg-ink/5 px-3 text-ink/50 select-none">basis.app/p/</span>
+          <div className="flex items-stretch rounded-xl border border-ink/15 bg-white focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-600/15 overflow-hidden transition" dir="ltr">
+            <span className="flex items-center bg-ink/[0.04] border-r border-ink/10 px-3 text-sm text-ink/50 select-none">basis.app/p/</span>
             <input
               id="slug"
               name="slug"
@@ -114,10 +114,10 @@ export function OnboardingForm() {
               required
               placeholder="noa-bakery"
               pattern="[a-z0-9-]+"
-              className="flex-1 min-w-0 px-3 py-3 text-lg focus:outline-none placeholder:text-ink/35"
+              className="flex-1 min-w-0 px-4 py-3 text-[15px] focus:outline-none placeholder:text-ink/35"
             />
           </div>
-          <p className="text-xs text-ink/50 mt-1.5">
+          <p className={ui.hint}>
             רק אותיות אנגליות קטנות, מספרים, ומקף. זו הכתובת שנשלחת ללקוחות.
           </p>
         </div>
@@ -153,13 +153,13 @@ export function OnboardingForm() {
                   type="button"
                   onClick={() => setProfession(label)}
                   aria-pressed={selected}
-                  className={`flex flex-col items-center gap-1.5 rounded-2xl border-2 px-2 py-3 text-sm font-semibold transition ${
+                  className={`flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30 ${
                     selected
-                      ? "border-ink bg-sun shadow-[3px_3px_0_#1e1b4b] -translate-y-0.5"
-                      : "border-ink/10 bg-white hover:border-ink/40 hover:-translate-y-0.5"
+                      ? "border-blue-600 bg-blue-50 ring-4 ring-blue-600/10"
+                      : "border-ink/10 bg-white hover:border-ink/30 hover:shadow-card"
                   }`}
                 >
-                  <Icon className="w-12 h-12" />
+                  <Icon className="w-11 h-11" />
                   {label}
                 </button>
               );
@@ -179,7 +179,7 @@ export function OnboardingForm() {
             placeholder="למשל: עוגות מעוצבות לימי הולדת, מגשי קינוחים לאירועים, סדנאות אפייה"
             className={`${inputClass} resize-none`}
           />
-          <p className="text-xs text-ink/50 mt-1.5">
+          <p className={ui.hint}>
             לפי זה נחפש מחירים בשוק ונבנה לך את יועץ התמחור.
           </p>
         </div>
@@ -215,7 +215,7 @@ export function OnboardingForm() {
         </div>
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={ui.error} role="alert">{state.error}</p>}
 
       <div className="md:max-w-sm">
         <SubmitButton pendingText="מחפשים...">המשך לשאלון התאמה</SubmitButton>

@@ -5,7 +5,9 @@ import {
   MarketingContentDisplay,
   type Ideas,
 } from "@/components/forms/MarketingContentDisplay";
-import { Megaphone, Sparkle } from "@/components/illustrations/BusinessIcons";
+import { Megaphone } from "@/components/illustrations/BusinessIcons";
+import { ui } from "@/lib/ui";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 // Generating ideas is an AI call that can take ~30 seconds - give the
 // Server Action room to finish.
@@ -45,8 +47,8 @@ export default async function BrandingPage() {
 
   if (!businessProfile) {
     return (
-      <div className="max-w-lg mx-auto p-8">
-        <p className="text-gray-600">
+      <div className={ui.pageNarrow}>
+        <p className={ui.muted}>
           יש להשלים קודם את פרופיל העסק ב-onboarding.
         </p>
       </div>
@@ -67,25 +69,24 @@ export default async function BrandingPage() {
       : null);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
-      <div className="relative rounded-3xl bg-coral-soft border-2 border-ink p-6 shadow-[5px_5px_0_#1e1b4b] overflow-hidden">
-        <Megaphone className="absolute -bottom-2 -left-2 w-24 rotate-[-8deg]" />
-        <Sparkle className="absolute top-4 left-24 w-6 animate-wiggle" />
-        <h1 className="text-3xl font-extrabold text-blue-950">מיתוג</h1>
-        <p className="text-ink/70 mt-1 max-w-md">
-          ה-AI כותב בשבילך סלוגנים, ביו לאינסטגרם, טקסט לאתר ופוסטים. בוחרים
-          את מה שאוהבים, מעתיקים ומשתמשים.
-        </p>
-      </div>
+    <div className={`${ui.pageNarrow} space-y-6`}>
+      <PageHeader
+        title="מיתוג"
+        subtitle="ה-AI כותב בשבילך סלוגנים, ביו לאינסטגרם, טקסט לאתר ופוסטים. בוחרים, מעתיקים ומשתמשים."
+        icon={<Megaphone className="w-10 h-10" />}
+        tint="bg-coral-soft"
+      />
 
+      <div className={`${ui.card} ${ui.cardPad}`}>
       <BrandingQuestionnaire
         existingAnswers={branding?.answers ?? undefined}
         hasIdeas={!!ideas}
-      />
+        />
+      </div>
 
       {ideas && (
-        <div className="pt-6 border-t-2 border-ink/10">
-          <h2 className="text-xl font-extrabold text-blue-950 mb-4">הרעיונות שלך</h2>
+        <div className={`${ui.card} ${ui.cardPad}`}>
+          <h2 className={`${ui.h2} mb-4`}>הרעיונות שלך</h2>
           <MarketingContentDisplay ideas={ideas} />
         </div>
       )}

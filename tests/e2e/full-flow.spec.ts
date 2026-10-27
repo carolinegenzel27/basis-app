@@ -47,7 +47,7 @@ test.describe("signup through dashboard", () => {
       // Answer every question the same way ("מסכים/ה") - the actual
       // recommendation isn't what this test is checking; reaching the
       // dashboard afterward is.
-      await page.getByRole("button", { name: "מסכים/ה", exact: true }).click();
+      await page.getByRole("radio", { name: "מסכים/ה", exact: true }).click();
       await page
         .getByRole("button", { name: isLast ? "קבלת המלצה" : "הבא" })
         .click();

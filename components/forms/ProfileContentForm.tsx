@@ -5,6 +5,7 @@ import {
   updateProfileContent,
   type ActionState,
 } from "@/lib/actions/profile-media";
+import { ui } from "@/lib/ui";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 
 const initialState: ActionState = { success: false };
@@ -37,12 +38,12 @@ export function ProfileContentForm({
   const hasBranding = !!(generatedUvpStatement || generatedWebsiteText);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       <input type="hidden" name="business_profile_id" value={businessProfileId} />
 
       {hasBranding && (
-        <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 space-y-4">
-          <p className="text-sm text-blue-900">
+        <div className="rounded-xl bg-sky-soft/60 border border-blue-200/60 p-4 sm:p-5 space-y-4">
+          <p className="text-sm text-ink/80 leading-relaxed">
             יצרת חומרי מיתוג בעמוד &quot;מיתוג&quot; - כאן אפשר לבחור אם להציג
             אותם בעמוד הציבורי שלך, ולערוך את הניסוח בדיוק כרצונך. שדה ריק לא
             יוצג בעמוד.
@@ -60,7 +61,7 @@ export function ProfileContentForm({
                     onClick={() => {
                       if (uvpRef.current) uvpRef.current.value = generatedUvpStatement;
                     }}
-                    className="text-xs text-blue-800 underline"
+                    className="text-xs font-semibold text-blue-700 hover:underline"
                   >
                     טעינה מהמיתוג
                   </button>
@@ -69,7 +70,7 @@ export function ProfileContentForm({
                     onClick={() => {
                       if (uvpRef.current) uvpRef.current.value = "";
                     }}
-                    className="text-xs text-red-700 underline"
+                    className="text-xs font-semibold text-red-600 hover:underline"
                   >
                     מחיקה
                   </button>
@@ -84,7 +85,7 @@ export function ProfileContentForm({
                 maxLength={400}
                 defaultValue={defaultPublicUvpText}
                 placeholder='לחצו "טעינה מהמיתוג" כדי להתחיל מהטקסט שיצרת, או כתבו בעצמכם'
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
+                className={ui.input}
               />
             </div>
           )}
@@ -101,7 +102,7 @@ export function ProfileContentForm({
                     onClick={() => {
                       if (websiteRef.current) websiteRef.current.value = generatedWebsiteText;
                     }}
-                    className="text-xs text-blue-800 underline"
+                    className="text-xs font-semibold text-blue-700 hover:underline"
                   >
                     טעינה מהמיתוג
                   </button>
@@ -110,7 +111,7 @@ export function ProfileContentForm({
                     onClick={() => {
                       if (websiteRef.current) websiteRef.current.value = "";
                     }}
-                    className="text-xs text-red-700 underline"
+                    className="text-xs font-semibold text-red-600 hover:underline"
                   >
                     מחיקה
                   </button>
@@ -125,7 +126,7 @@ export function ProfileContentForm({
                 maxLength={800}
                 defaultValue={defaultPublicWebsiteText}
                 placeholder='לחצו "טעינה מהמיתוג" כדי להתחיל מהטקסט שיצרת, או כתבו בעצמכם'
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
+                className={ui.input}
               />
             </div>
           )}
@@ -133,7 +134,7 @@ export function ProfileContentForm({
       )}
 
       <div>
-        <label htmlFor="about_me" className="block text-sm font-medium mb-1">
+        <label htmlFor="about_me" className={ui.label}>
           קצת עליי
         </label>
         <textarea
@@ -144,12 +145,12 @@ export function ProfileContentForm({
           maxLength={600}
           defaultValue={defaultAboutMe}
           placeholder="כמה משפטים על עצמך ומה מייחד אותך"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
       </div>
 
       <div>
-        <label htmlFor="experience_text" className="block text-sm font-medium mb-1">
+        <label htmlFor="experience_text" className={ui.label}>
           ניסיון
         </label>
         <textarea
@@ -160,12 +161,12 @@ export function ProfileContentForm({
           maxLength={600}
           defaultValue={defaultExperienceText}
           placeholder="ותק, הכשרות, הישגים בולטים"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
       </div>
 
       <div>
-        <label htmlFor="additional_info" className="block text-sm font-medium mb-1">
+        <label htmlFor="additional_info" className={ui.label}>
           לפרטים נוספים
         </label>
         <textarea
@@ -176,13 +177,13 @@ export function ProfileContentForm({
           maxLength={600}
           defaultValue={defaultAdditionalInfo}
           placeholder="שעות פעילות, אזור שירות, כל דבר אחר שחשוב שלקוחות ידעו"
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-right focus:outline-none focus:ring-2 focus:ring-blue-700"
+          className={ui.input}
         />
       </div>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={ui.error} role="alert">{state.error}</p>}
       {state.success && (
-        <p className="text-sm text-green-700">נשמר!</p>
+        <p className={ui.success} role="status">נשמר!</p>
       )}
       <SubmitButton>שמירה</SubmitButton>
     </form>

@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { QuoteForm } from "@/components/forms/QuoteForm";
+import { ui } from "@/lib/ui";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { QuoteDoc } from "@/components/illustrations/BusinessIcons";
 
 export default async function NewQuotePage({
   searchParams,
@@ -98,22 +101,27 @@ export default async function NewQuotePage({
   }
 
   return (
-    <div className="max-w-lg mx-auto p-8 space-y-6">
-      <div>
-        <a href="/quotes" className="text-sm text-gray-500 underline">
-          ← חזרה לרשימת ההצעות
-        </a>
-        <h1 className="text-2xl font-bold text-blue-950 mt-2">הצעת מחיר חדשה</h1>
-      </div>
-
-      <QuoteForm
-        businessProfileId={businessProfile.id}
-        defaultProjectDescription={defaultProjectDescription}
-        defaultPrice={defaultPrice}
-        defaultDocumentTitle={defaultDocumentTitle}
-        pricingRecommendationId={pricingRecommendationId}
-        marketRange={marketRange}
+    <div className={`${ui.pageNarrow} space-y-6`}>
+      <a href="/quotes" className={`${ui.link} text-sm`}>
+        &rarr; חזרה לרשימת ההצעות
+      </a>
+      <PageHeader
+        title="הצעת מחיר חדשה"
+        subtitle="ממלאים פרטים, ומקבלים PDF מקצועי לשליחה ללקוח."
+        icon={<QuoteDoc className="w-10 h-10" />}
+        tint="bg-sky-soft"
       />
+
+      <div className={`${ui.card} ${ui.cardPad}`}>
+        <QuoteForm
+          businessProfileId={businessProfile.id}
+          defaultProjectDescription={defaultProjectDescription}
+          defaultPrice={defaultPrice}
+          defaultDocumentTitle={defaultDocumentTitle}
+          pricingRecommendationId={pricingRecommendationId}
+          marketRange={marketRange}
+        />
+      </div>
     </div>
   );
 }

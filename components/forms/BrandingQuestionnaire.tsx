@@ -6,6 +6,7 @@ import { SubmitButton } from "@/components/ui/SubmitButton";
 import { AiWorkingOverlay } from "@/components/ui/AiWorkingOverlay";
 import { BRANDING_QUESTIONS, TONE_LABELS } from "@/lib/templates/branding-questions";
 import { BRANDING_TONES } from "@/lib/validations/branding";
+import { ui } from "@/lib/ui";
 
 const initialState: ActionState = { success: false };
 
@@ -33,7 +34,7 @@ export function BrandingQuestionnaire({
       />
 
       <fieldset>
-        <legend className="block text-sm font-semibold mb-2">באיזה טון לכתוב?</legend>
+        <legend className={`${ui.label} mb-3`}>באיזה טון לכתוב?</legend>
         <div className="flex flex-wrap gap-2">
           {BRANDING_TONES.map((tone) => (
             <label key={tone} className="cursor-pointer">
@@ -44,7 +45,7 @@ export function BrandingQuestionnaire({
                 defaultChecked={currentTone === tone}
                 className="peer sr-only"
               />
-              <span className="inline-block rounded-full border-2 border-ink/10 bg-white px-4 py-1.5 text-sm font-medium transition peer-checked:border-ink peer-checked:bg-coral-soft peer-checked:shadow-[2px_2px_0_#1e1b4b] peer-focus-visible:ring-4 peer-focus-visible:ring-blue-700/20 hover:border-ink/40">
+              <span className="inline-block rounded-xl border border-ink/12 bg-white px-4 py-2 text-sm font-semibold text-ink/75 transition hover:border-ink/30 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-checked:text-ink peer-checked:ring-4 peer-checked:ring-blue-600/10 peer-focus-visible:ring-4 peer-focus-visible:ring-blue-600/30">
                 {TONE_LABELS[tone]}
               </span>
             </label>
@@ -52,7 +53,7 @@ export function BrandingQuestionnaire({
         </div>
       </fieldset>
 
-      <details className="group rounded-2xl border-2 border-ink/10 bg-white" open={!hasIdeas}>
+      <details className="group rounded-xl border border-ink/10 bg-ink/[0.02]" open={!hasIdeas}>
         <summary className="cursor-pointer list-none px-4 py-3 font-semibold flex items-center justify-between">
           <span>
             ספרו לנו קצת יותר <span className="font-normal text-ink/50 text-sm">(לא חובה - אבל הרעיונות יהיו אישיים יותר)</span>
@@ -74,20 +75,22 @@ export function BrandingQuestionnaire({
                 maxLength={120}
                 placeholder={field.placeholder}
                 defaultValue={existingAnswers?.[field.name] ?? ""}
-                className="w-full rounded-xl border-2 border-ink/15 px-3.5 py-2.5 focus:outline-none focus:border-blue-700 placeholder:text-ink/35"
+                className={ui.input}
               />
             </div>
           ))}
         </div>
       </details>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p className={ui.error} role="alert">{state.error}</p>}
       {state.success && (
-        <p className="text-sm text-mint font-semibold">הרעיונות מוכנים! גללו למטה ✨</p>
+        <p className={ui.success} role="status">הרעיונות מוכנים! גללו למטה ✨</p>
       )}
-      <SubmitButton pendingText="כותבים...">
-        {hasIdeas ? "✨ צרו לי רעיונות חדשים" : "✨ צרו לי רעיונות כתיבה"}
-      </SubmitButton>
+      <div className="sm:max-w-xs">
+        <SubmitButton pendingText="כותבים...">
+          {hasIdeas ? "✨ צרו לי רעיונות חדשים" : "✨ צרו לי רעיונות כתיבה"}
+        </SubmitButton>
+      </div>
     </form>
   );
 }

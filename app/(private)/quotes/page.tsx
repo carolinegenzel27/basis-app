@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { deleteQuote } from "@/lib/actions/quotes";
+import { ui } from "@/lib/ui";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { QuoteDoc } from "@/components/illustrations/BusinessIcons";
 
 // Kept as a plain constant (not imported from lib/pdf/QuoteDocument) so this
 // page doesn't pull @react-pdf/renderer into its bundle just to know the
@@ -61,51 +64,63 @@ export default async function QuotesPage({
   const quotes = (quotesPageRows ?? []).slice(0, PAGE_SIZE);
 
   return (
-    <div className="max-w-2xl mx-auto p-8 space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-blue-950">הצעות מחיר</h1>
-        <a
-          href="/quotes/new"
-          className="rounded-lg bg-blue-800 px-4 py-2 text-white text-sm font-medium hover:bg-blue-900"
-        >
-          + הצעה חדשה
-        </a>
-      </div>
+    <div className={`${ui.pageNarrow} space-y-8`}>
+      <PageHeader
+        title="הצעות מחיר"
+        subtitle="כל ההצעות ששלחת, מוכנות להורדה ולשכפול."
+        icon={<QuoteDoc className="w-10 h-10" />}
+        tint="bg-sky-soft"
+        actions={
+          <a href="/quotes/new" className={ui.btnPrimary}>
+            + הצעה חדשה
+          </a>
+        }
+      />
 
       {page === 1 && (!quotes || quotes.length === 0) && (
-        <p className="text-gray-500 text-sm">עדיין אין הצעות מחיר. אפשר להתחיל ליצור הצעה חדשה.</p>
+        <div className={`${ui.card} p-10 text-center space-y-3`}>
+          <QuoteDoc className="w-16 h-16 mx-auto" />
+          <p className="text-lg font-bold">עדיין אין הצעות מחיר</p>
+          <p className={ui.muted}>הצעה ראשונה לוקחת פחות מדקה.</p>
+          <a href="/quotes/new" className={`${ui.btnPrimary} mt-2`}>
+            יצירת הצעה ראשונה
+          </a>
+        </div>
       )}
 
       <ul className="space-y-3">
         {quotes?.map((quote) => (
-          <li key={quote.id} className="rounded-lg border border-gray-200 p-4 space-y-2">
-            <p className="text-xs text-gray-400">
-              {quote.document_title || DEFAULT_QUOTE_TITLE}
-            </p>
-            <div className="flex items-center justify-between">
-              <p className="font-medium">{quote.client_name}</p>
-              <p className="font-bold">{Number(quote.price).toLocaleString("he-IL")} ₪</p>
+          <li key={quote.id} className={`${ui.card} p-5 sm:p-6`}>
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-ink/45">
+                  {quote.document_title || DEFAULT_QUOTE_TITLE} ·{" "}
+                  {new Date(quote.created_at).toLocaleDateString("he-IL")}
+                </p>
+                <p className="mt-1 text-lg font-bold truncate">{quote.client_name}</p>
+                {quote.project_description && (
+                  <p className="text-ink/60 mt-0.5">{quote.project_description}</p>
+                )}
+              </div>
+              <p className="text-xl font-extrabold whitespace-nowrap">
+                {Number(quote.price).toLocaleString("he-IL")} ₪
+              </p>
             </div>
-            {quote.project_description && (
-              <p className="text-sm text-gray-600">{quote.project_description}</p>
-            )}
-            <p className="text-xs text-gray-400">
-              {new Date(quote.created_at).toLocaleDateString("he-IL")}
-            </p>
-            <div className="flex items-center gap-4 pt-1 text-sm">
-              <a href={`/api/quotes/${quote.id}/pdf`} className="text-blue-950 underline">
+            <div className="flex flex-wrap items-center gap-2 pt-4 mt-4 border-t border-ink/[0.06]">
+              <a href={`/api/quotes/${quote.id}/pdf`} className={ui.btnSmall}>
                 הורדת PDF
               </a>
-              <a href={`/quotes/new?duplicateFrom=${quote.id}`} className="text-blue-950 underline">
+              <a href={`/quotes/new?duplicateFrom=${quote.id}`} className={ui.btnSmall}>
                 שכפול
               </a>
               <form
+                className="ms-auto"
                 action={async () => {
                   "use server";
                   await deleteQuote(quote.id);
                 }}
               >
-                <button type="submit" className="text-red-600 underline">
+                <button type="submit" className={ui.linkDanger}>
                   מחיקה
                 </button>
               </form>
@@ -115,23 +130,23 @@ export default async function QuotesPage({
       </ul>
 
       {(page > 1 || hasNextPage) && (
-        <div className="flex items-center justify-between pt-2 text-sm">
+        <nav aria-label="עמודי הצעות" className="flex items-center justify-between pt-2 text-sm">
           {page > 1 ? (
-            <a href={`/quotes?page=${page - 1}`} className="text-blue-950 underline">
-              &larr; הצעות קודמות
+            <a href={`/quotes?page=${page - 1}`} className={ui.btnSmall}>
+              &rarr; הצעות קודמות
             </a>
           ) : (
             <span />
           )}
-          <span className="text-gray-400">עמוד {page}</span>
+          <span className="text-ink/45 font-semibold">עמוד {page}</span>
           {hasNextPage ? (
-            <a href={`/quotes?page=${page + 1}`} className="text-blue-950 underline">
-              הצעות הבאות &rarr;
+            <a href={`/quotes?page=${page + 1}`} className={ui.btnSmall}>
+              הצעות הבאות &larr;
             </a>
           ) : (
             <span />
           )}
-        </div>
+        </nav>
       )}
     </div>
   );

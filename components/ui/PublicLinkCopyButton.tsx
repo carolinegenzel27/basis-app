@@ -20,7 +20,13 @@ function useOrigin() {
   );
 }
 
-export function PublicLinkCopyButton({ slug }: { slug: string }) {
+export function PublicLinkCopyButton({
+  slug,
+  tone = "dark",
+}: {
+  slug: string;
+  tone?: "dark" | "light";
+}) {
   const [copied, setCopied] = useState(false);
   const origin = useOrigin();
 
@@ -32,24 +38,32 @@ export function PublicLinkCopyButton({ slug }: { slug: string }) {
     setTimeout(() => setCopied(false), 1500);
   }
 
+  const light = tone === "light";
+
   return (
-    <div className="flex items-center gap-2">
+    <div className={`flex items-center gap-2 rounded-xl p-1.5 ${light ? "bg-white/10 border border-white/15" : "bg-ink/[0.03] border border-ink/10"}`}>
       <a
         href={`/p/${slug}`}
         target="_blank"
         rel="noopener noreferrer"
         dir="ltr"
-        className="text-sm text-blue-950 underline truncate"
+        className={`flex-1 min-w-0 truncate px-2 text-sm font-medium hover:underline ${light ? "text-white" : "text-ink"}`}
       >
         {url}
+        <span className="sr-only"> (נפתח בחלון חדש)</span>
       </a>
       <button
         type="button"
         onClick={handleCopy}
-        className="text-xs text-slate-600 hover:text-blue-800 underline shrink-0"
+        className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30 ${
+          light ? "bg-white text-ink hover:bg-sun" : "bg-ink text-white hover:bg-ink-soft"
+        }`}
       >
-        {copied ? "הועתק!" : "העתק קישור"}
+        {copied ? "הועתק! ✓" : "העתקת קישור"}
       </button>
+      <span className="sr-only" aria-live="polite">
+        {copied ? "הקישור הועתק" : ""}
+      </span>
     </div>
   );
 }

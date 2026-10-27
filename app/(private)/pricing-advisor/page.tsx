@@ -6,7 +6,9 @@ import {
   RefreshMarketSearchButton,
 } from "@/components/forms/PricingAdvisorForm";
 import { professionLabel } from "@/lib/professions";
-import { PriceTag, Sparkle } from "@/components/illustrations/BusinessIcons";
+import { PriceTag } from "@/components/illustrations/BusinessIcons";
+import { ui } from "@/lib/ui";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 // The search forms on this page run the AI market search, which can take up
 // to a minute - give their Server Actions room to finish.
@@ -38,8 +40,8 @@ export default async function PricingAdvisorPage() {
 
   if (!businessProfile) {
     return (
-      <div className="max-w-lg mx-auto p-8">
-        <p className="text-gray-600">
+      <div className={ui.pageNarrow}>
+        <p className={ui.muted}>
           יש להשלים קודם את פרופיל העסק ב-onboarding.
         </p>
       </div>
@@ -74,29 +76,29 @@ export default async function PricingAdvisorPage() {
     .limit(5);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-8">
-      <div className="relative rounded-3xl bg-sun-soft border-2 border-ink p-6 shadow-[5px_5px_0_#1e1b4b] overflow-hidden">
-        <PriceTag className="absolute -bottom-3 -left-2 w-24 rotate-[-12deg] opacity-90" />
-        <Sparkle className="absolute top-4 left-24 w-6 animate-wiggle" />
-        <h1 className="text-3xl font-extrabold text-blue-950">יועץ תמחור</h1>
-        <p className="text-ink/70 mt-1 max-w-md">
-          מחירים שמצאנו בשוק עבור {professionLabel(businessProfile.profession)}. בחרו שירות וקבלו
-          טווח מחיר מומלץ.
-        </p>
+    <div className={`${ui.pageNarrow} space-y-6`}>
+      <PageHeader
+        title="יועץ תמחור"
+        subtitle={<>מחירים שמצאנו בשוק עבור {professionLabel(businessProfile.profession)}. בוחרים שירות ומקבלים טווח מחיר מומלץ.</>}
+        icon={<PriceTag className="w-10 h-10" />}
+        tint="bg-sun-soft"
+      />
+
+      <div className={`${ui.card} ${ui.cardPad}`}>
+        {hasOptions ? (
+          <PricingAdvisorForm businessProfileId={businessProfile.id} options={options} />
+        ) : (
+          <div className="text-center space-y-2 py-4">
+            <PriceTag className="w-14 h-14 mx-auto" />
+            <p className="text-lg font-bold">עוד לא חיפשנו מחירים לעסק שלך</p>
+            <p className={ui.muted}>לחיצה אחת - ונחפש בשוק מה עסקים כמו שלך גובים.</p>
+          </div>
+        )}
       </div>
 
-      {hasOptions ? (
-        <PricingAdvisorForm businessProfileId={businessProfile.id} options={options} />
-      ) : (
-        <div className="rounded-2xl border-2 border-dashed border-ink/20 bg-white p-6 text-center space-y-2">
-          <p className="font-semibold text-blue-950">עוד לא חיפשנו מחירים לעסק שלך</p>
-          <p className="text-sm text-ink/60">לחיצה אחת - ונחפש בשוק מה עסקים כמו שלך גובים.</p>
-        </div>
-      )}
-
-      <div className="rounded-2xl bg-white border-2 border-ink/10 p-5 space-y-3">
+      <div className={`${ui.card} ${ui.cardPad} space-y-4`}>
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h2 className="font-bold text-blue-950">
+          <h2 className={ui.h2}>
             {hasOptions ? "לא מצאת את מה שאת/ה מוכר/ת?" : "חיפוש מחירים בשוק"}
           </h2>
           {hasOptions && <RefreshMarketSearchButton businessProfileId={businessProfile.id} />}
@@ -105,17 +107,17 @@ export default async function PricingAdvisorPage() {
       </div>
 
       {history && history.length > 0 && (
-        <div className="pt-6 border-t-2 border-ink/10">
-          <h2 className="text-lg font-bold text-blue-950 mb-3">המלצות קודמות</h2>
+        <div className={`${ui.card} ${ui.cardPad}`}>
+          <h2 className={`${ui.h2} mb-4`}>המלצות קודמות</h2>
           <ul className="space-y-2">
             {history.map((h) => (
-              <li key={h.id} className="flex items-center justify-between text-sm text-ink/70 bg-white rounded-xl px-4 py-2.5 border border-ink/10">
+              <li key={h.id} className="flex items-center justify-between gap-3 text-ink/70 rounded-xl px-4 py-3 bg-ink/[0.03]">
                 <span>
                   {h.project_type_label}: <span className="font-semibold text-ink">{h.recommended_min}-{h.recommended_max} ₪</span>
                 </span>
                 <a
                   href={`/quotes/new?recommendationId=${h.id}`}
-                  className="text-blue-800 underline text-xs shrink-0 ms-3"
+                  className={`${ui.link} text-sm shrink-0`}
                 >
                   יצירת הצעת מחיר
                 </a>

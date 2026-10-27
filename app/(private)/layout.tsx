@@ -22,7 +22,7 @@ export default async function PrivateLayout({
   }
 
   return (
-    <div className="min-h-screen bg-blue-50">
+    <div className="min-h-screen bg-cream text-ink">
       {/* Hidden on /onboarding and /fit-assessment on purpose - someone still
           in the signup flow hasn't finished setting up their business yet,
           so navigating away via the navbar would drop them on a page that

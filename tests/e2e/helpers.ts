@@ -40,7 +40,7 @@ export async function signUpAndReachOnboarding(page: Page, email: string, passwo
   await page.goto("/signup");
   await page.getByLabel("אימייל").fill(email);
   await page.getByLabel("סיסמה").fill(password);
-  await page.getByRole("button", { name: "להירשם" }).click();
+  await page.getByRole("button", { name: "יצירת חשבון בחינם" }).click();
   await page.waitForURL(/\/onboarding/, { timeout: 10_000 });
 }
 

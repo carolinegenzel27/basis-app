@@ -5,6 +5,7 @@ import {
   uploadProfilePhoto,
   type ActionState,
 } from "@/lib/actions/profile-media";
+import { ui } from "@/lib/ui";
 import { SubmitButton } from "@/components/ui/SubmitButton";
 
 const initialState: ActionState = { success: false };
@@ -25,21 +26,21 @@ export function PhotoUploadForm({
         <img
           src={currentPhotoUrl}
           alt="תמונת הפרופיל שלך"
-          className="w-28 h-28 rounded-full object-cover border border-gray-200"
+          className="w-28 h-28 rounded-2xl object-cover border border-ink/10 shadow-card"
         />
       )}
-      <form action={formAction} className="space-y-2">
+      <form action={formAction} className="space-y-3">
         <input type="hidden" name="business_profile_id" value={businessProfileId} />
         <input
           type="file"
           name="photo"
           accept="image/jpeg,image/png,image/webp"
           required
-          className="block w-full text-sm text-gray-600 file:me-3 file:rounded-lg file:border-0 file:bg-blue-800 file:px-3 file:py-2 file:text-white file:text-sm hover:file:bg-blue-900"
+          className={ui.file}
         />
-        <p className="text-xs text-gray-400">JPG, PNG או WEBP - עד 5MB</p>
-        {state.error && <p className="text-sm text-red-600">{state.error}</p>}
-        {state.success && <p className="text-sm text-green-700">התמונה עודכנה!</p>}
+        <p className={ui.hint}>JPG, PNG או WEBP - עד 5MB</p>
+        {state.error && <p className={ui.error} role="alert">{state.error}</p>}
+        {state.success && <p className={ui.success} role="status">התמונה עודכנה!</p>}
         <SubmitButton>
           {currentPhotoUrl ? "החלפת תמונה" : "העלאת תמונה"}
         </SubmitButton>

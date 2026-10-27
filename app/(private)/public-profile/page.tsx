@@ -4,6 +4,9 @@ import { ProfileContentForm } from "@/components/forms/ProfileContentForm";
 import { PhotoUploadForm } from "@/components/forms/PhotoUploadForm";
 import { DocumentUploadForm } from "@/components/forms/DocumentUploadForm";
 import { DeleteDocumentButton } from "@/components/forms/DeleteDocumentButton";
+import { ui } from "@/lib/ui";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { Storefront } from "@/components/illustrations/BusinessIcons";
 
 export default async function PublicProfilePage() {
   const supabase = await createClient();
@@ -26,11 +29,11 @@ export default async function PublicProfilePage() {
   // already has a profile, which looked like the whole feature was missing.
   if (profileError) {
     return (
-      <div className="max-w-lg mx-auto p-8">
-        <p className="text-red-600 text-sm">
+      <div className={ui.pageNarrow}>
+        <p className={ui.error}>
           שגיאה בטעינת העמוד: {profileError.message}
         </p>
-        <p className="text-gray-500 text-sm mt-2">
+        <p className={`${ui.muted} text-sm mt-2`}>
           סביר שצריך להריץ את supabase/add_profile_media.sql ב-SQL Editor.
         </p>
       </div>
@@ -69,37 +72,35 @@ export default async function PublicProfilePage() {
     .maybeSingle();
 
   return (
-    <div className="max-w-2xl mx-auto p-8 space-y-8">
-      <div>
-        <a href="/dashboard" className="text-sm text-gray-500 underline">
-          ← חזרה למסך הבית
-        </a>
-        <h1 className="text-2xl font-bold text-blue-950 mt-2">הכנת עמוד ציבורי</h1>
-        <p className="text-gray-600 mt-1">
-          כל מה שממלאים כאן מוצג בעמוד הציבורי שלך -{" "}
+    <div className={`${ui.pageNarrow} space-y-6`}>
+      <PageHeader
+        title="הכנת עמוד ציבורי"
+        subtitle="כל מה שממלאים כאן מוצג בעמוד העסקי שלך. אפשר למלא חלק ולהשלים מתי שנוח."
+        icon={<Storefront className="w-10 h-10" />}
+        tint="bg-mint-soft"
+        actions={
           <a
             href={`/p/${businessProfile.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="underline"
-            dir="ltr"
+            className={ui.btnSecondary}
           >
-            /p/{businessProfile.slug}
+            צפייה בעמוד
+            <span className="sr-only"> (נפתח בחלון חדש)</span>
           </a>
-          . אפשר למלא חלק ולהשלים את השאר מתי שנוח.
-        </p>
-      </div>
+        }
+      />
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-blue-950">תמונה</h2>
+      <section aria-labelledby="photo-title" className={`${ui.card} ${ui.cardPad} space-y-4`}>
+        <h2 id="photo-title" className={ui.h2}>תמונה</h2>
         <PhotoUploadForm
           businessProfileId={businessProfile.id}
           currentPhotoUrl={businessProfile.photo_url}
         />
       </section>
 
-      <section className="space-y-3 pt-6 border-t border-gray-200">
-        <h2 className="text-lg font-semibold text-blue-950">קצת עליי, ניסיון, ופרטים נוספים</h2>
+      <section aria-labelledby="content-title" className={`${ui.card} ${ui.cardPad} space-y-4`}>
+        <h2 id="content-title" className={ui.h2}>קצת עליי, ניסיון ופרטים נוספים</h2>
         <ProfileContentForm
           businessProfileId={businessProfile.id}
           defaultAboutMe={businessProfile.about_me ?? ""}
@@ -112,26 +113,26 @@ export default async function PublicProfilePage() {
         />
       </section>
 
-      <section className="space-y-3 pt-6 border-t border-gray-200">
-        <h2 className="text-lg font-semibold text-blue-950">מסמכים</h2>
-        <p className="text-sm text-gray-500 -mt-1">
-          תעודות, תפריט, מחירון - כל קובץ שיעזור ללקוח פוטנציאלי להכיר אותך.
-        </p>
+      <section aria-labelledby="docs-title" className={`${ui.card} ${ui.cardPad} space-y-4`}>
+        <div>
+          <h2 id="docs-title" className={ui.h2}>תמונות ומסמכים</h2>
+          <p className={`${ui.muted} mt-1`}>
+            תמונות של עבודות, תעודות, תפריט, מחירון - כל קובץ שיעזור ללקוח להכיר אותך.
+          </p>
+        </div>
 
         {documents && documents.length > 0 && (
-          <ul className="space-y-2">
+          <ul className="divide-y divide-ink/[0.06] rounded-xl border border-ink/10">
             {documents.map((doc) => (
-              <li
-                key={doc.id}
-                className="flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2"
-              >
+              <li key={doc.id} className="flex items-center justify-between gap-3 px-4 py-3">
                 <a
                   href={doc.file_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-blue-950 underline truncate"
+                  className="text-sm font-semibold text-ink hover:underline truncate"
                 >
                   {doc.file_name}
+                  <span className="sr-only"> (נפתח בחלון חדש)</span>
                 </a>
                 <DeleteDocumentButton documentId={doc.id} />
               </li>

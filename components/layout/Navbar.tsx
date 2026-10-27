@@ -1,7 +1,7 @@
-import Link from "next/link";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/lib/actions/auth";
+import { Logo } from "@/components/brand/Logo";
+import { NavLinks } from "./NavLinks";
 
 // Server Component (like everything else that reads user state in this
 // app) - fetches its own data instead of receiving it as a prop, so any
@@ -15,64 +15,23 @@ export async function Navbar() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const links = [
-    { href: "/dashboard", label: "מסך הבית" },
-    { href: "/branding", label: "מיתוג" },
-    { href: "/pricing-advisor", label: "יועץ תמחור" },
-    { href: "/quotes", label: "הצעות מחיר" },
-    { href: "/public-profile", label: "עמוד ציבורי" },
-  ];
-
   return (
-    <header className="border-b border-gray-200 bg-white sticky top-0 z-10">
-      <div className="max-w-5xl mx-auto px-6 py-3 flex flex-wrap items-center justify-between gap-3">
-        {/* Explicit width/height (rendered as real <img> attributes) instead
-            of the fill+positioned-parent pattern - fill depends on CSS
-            classes sizing the parent box, so with a stale/missing stylesheet
-            the logo exploded to full-page size. Intrinsic attributes cap the
-            size at the HTML level, CSS or no CSS.
-            This logo (logo-mark2.png) is deliberately shown ONLY here, once
-            the user is actually inside the app - not on the public landing
-            page or login/signup, which use the plain text wordmark. */}
-        <Link href="/dashboard" className="flex items-center gap-2 shrink-0">
-          <Image src="/logo-mark2.png" alt="" width={40} height={32} className="h-8 w-auto shrink-0" priority />
-          <span className="font-bold text-lg text-blue-950">Basis</span>
-        </Link>
+    <header className="sticky top-0 z-30 bg-white/85 backdrop-blur-md border-b border-ink/[0.07]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+        <Logo href="/dashboard" />
 
-        {/* Separators are rendered as their own "|" element between links,
-            instead of a shared divide-x border on the container - a shared
-            border silently disappears at the exact spot a link wraps onto a
-            new line (the divider "belongs" to whichever visual row it lands
-            on, and looks disconnected/missing at the wrap point). Each link
-            carrying its own separator keeps the look correct at any width. */}
-        <nav className="flex flex-wrap items-center gap-y-1 text-sm">
-          {links.map((link, i) => (
-            <span key={link.href} className="flex items-center">
-              {i > 0 && (
-                <span className="text-gray-300 select-none" aria-hidden="true">
-                  |
-                </span>
-              )}
-              <Link
-                href={link.href}
-                className="px-3 text-gray-600 hover:text-blue-800 transition"
-              >
-                {link.label}
-              </Link>
-            </span>
-          ))}
-        </nav>
+        <NavLinks />
 
         <div className="flex items-center gap-3 shrink-0">
           {user?.email && (
-            <span className="text-xs text-gray-400 hidden sm:inline" dir="ltr">
+            <span className="text-xs text-ink/45 hidden lg:inline" dir="ltr">
               {user.email}
             </span>
           )}
           <form action={signOutAction}>
             <button
               type="submit"
-              className="text-sm text-gray-500 hover:text-blue-800 underline"
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-ink/60 hover:text-ink hover:bg-ink/[0.05] transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30"
             >
               התנתקות
             </button>
