@@ -54,7 +54,6 @@ export function QuoteForm({
           name="document_title"
           type="text"
           maxLength={60}
-          placeholder="הצעת מחיר"
           defaultValue={defaultDocumentTitle}
           className={ui.input}
         />

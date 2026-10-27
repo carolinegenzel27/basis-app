@@ -2,6 +2,8 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { getBusinessTheme } from "@/lib/business-theme";
+import { professionLabel } from "@/lib/professions";
 import {
   profileContentSchema,
   MAX_FILE_SIZE_BYTES,
@@ -48,6 +50,7 @@ export async function updateProfileContent(
     additional_info: formData.get("additional_info") ?? "",
     public_uvp_text: formData.get("public_uvp_text") ?? "",
     public_website_text: formData.get("public_website_text") ?? "",
+    public_tagline: formData.get("public_tagline") ?? "",
   });
 
   if (!parsed.success) {
@@ -63,14 +66,40 @@ export async function updateProfileContent(
     return { success: false, error: "יש להתחבר מחדש" };
   }
 
+  // Needed to work out the automatic opening line for this kind of
+  // business - computed here, not trusted from the form.
+  const { data: profile } = await supabase
+    .from("business_profiles")
+    .select("profession, slug")
+    .eq("id", parsed.data.business_profile_id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (!profile) {
+    return { success: false, error: "פרופיל עסק לא נמצא" };
+  }
+
+  const defaultTagline = getBusinessTheme(
+    professionLabel(profile.profession),
+    profile.slug
+  ).tagline;
+  const tagline = parsed.data.public_tagline ?? "";
+
+  // Empty strings are stored as "" (not null) on purpose: "" means the owner
+  // removed the text, while null means "never set" - which is what lets the
+  // editor pre-fill an untouched field from the branding ideas without
+  // bringing back something the owner deliberately removed.
   const { error } = await supabase
     .from("business_profiles")
     .update({
-      about_me: parsed.data.about_me || null,
-      experience_text: parsed.data.experience_text || null,
-      additional_info: parsed.data.additional_info || null,
-      public_uvp_text: parsed.data.public_uvp_text || null,
-      public_website_text: parsed.data.public_website_text || null,
+      about_me: parsed.data.about_me ?? "",
+      experience_text: parsed.data.experience_text ?? "",
+      additional_info: parsed.data.additional_info ?? "",
+      public_uvp_text: parsed.data.public_uvp_text ?? "",
+      // The website text now lives inside "קצת עליי" in the editor.
+      public_website_text: parsed.data.public_website_text ?? "",
+      // Matching the automatic line = keep following it (null).
+      public_tagline: tagline === defaultTagline ? null : tagline,
     })
     .eq("id", parsed.data.business_profile_id)
     .eq("user_id", user.id);
@@ -80,6 +109,7 @@ export async function updateProfileContent(
   }
 
   revalidatePath("/public-profile");
+  revalidatePath(`/p/${profile.slug}`);
   return { success: true };
 }
 

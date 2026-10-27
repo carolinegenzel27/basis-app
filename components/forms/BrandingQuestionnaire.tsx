@@ -3,7 +3,7 @@
 import { useActionState } from "react";
 import { saveBrandingAnswers, type ActionState } from "@/lib/actions/branding";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { AiWorkingOverlay } from "@/components/ui/AiWorkingOverlay";
+import { AiWorkingStatus } from "@/components/ui/AiWorkingStatus";
 import { BRANDING_QUESTIONS, TONE_LABELS } from "@/lib/templates/branding-questions";
 import { BRANDING_TONES } from "@/lib/validations/branding";
 import { ui } from "@/lib/ui";
@@ -22,16 +22,6 @@ export function BrandingQuestionnaire({
 
   return (
     <form action={formAction} className="space-y-5">
-      <AiWorkingOverlay
-        title="כותבים לך רעיונות"
-        messages={[
-          "קוראים על העסק שלך...",
-          "מנסחים סלוגנים קליטים...",
-          "כותבים ביו לאינסטגרם...",
-          "מכינים טקסט לאתר ופוסטים...",
-          "מלטשים את הניסוחים האחרונים ✨",
-        ]}
-      />
 
       <fieldset>
         <legend className={`${ui.label} mb-3`}>באיזה טון לכתוב?</legend>
@@ -73,7 +63,6 @@ export function BrandingQuestionnaire({
                 name={field.name}
                 type="text"
                 maxLength={120}
-                placeholder={field.placeholder}
                 defaultValue={existingAnswers?.[field.name] ?? ""}
                 className={ui.input}
               />
@@ -86,6 +75,17 @@ export function BrandingQuestionnaire({
       {state.success && (
         <p className={ui.success} role="status">הרעיונות מוכנים! גללו למטה ✨</p>
       )}
+      <AiWorkingStatus
+        title="כותבים לך רעיונות"
+        messages={[
+          "קוראים על העסק שלך...",
+          "מנסחים סלוגנים קליטים...",
+          "כותבים ביו לאינסטגרם...",
+          "מכינים טקסט לאתר ופוסטים...",
+          "מלטשים את הניסוחים האחרונים ✨",
+        ]}
+      />
+
       <div className="sm:max-w-xs">
         <SubmitButton pendingText="כותבים...">
           {hasIdeas ? "✨ צרו לי רעיונות חדשים" : "✨ צרו לי רעיונות כתיבה"}

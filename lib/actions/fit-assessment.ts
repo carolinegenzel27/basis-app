@@ -11,12 +11,14 @@ export type ActionState = {
   resultMessage?: string;
 };
 
+// Plain, short sentences - no dashes or slash forms, so they read well
+// aloud (screen readers) and at a glance.
 const RECOMMENDATION_MESSAGES: Record<FitRecommendation, string> = {
   pricing:
-    "על סמך התשובות שלך, אנחנו ממליצים להתחיל מ-יועץ התמחור - זה ייתן לך ביטחון וטווח מחיר ברור לכל פרויקט.",
+    "לפי התשובות שלך, כדאי להתחיל ביועץ התמחור. הוא יעזור לך לקבוע מחיר ברור לכל שירות, ולגבות אותו בביטחון.",
   branding:
-    "על סמך התשובות שלך, אנחנו ממליצים להתחיל במיתוג - זה יעזור לך להציג את עצמך ללקוחות בצורה ברורה ומקצועית.",
-  both: "על סמך התשובות שלך, גם תמחור וגם מיתוג יכולים לעזור לך - מומלץ להתחיל משניהם, לפי מה שנוח לך יותר.",
+    "לפי התשובות שלך, כדאי להתחיל במיתוג. הוא יעזור לך להציג את העסק ללקוחות בצורה ברורה ומקצועית.",
+  both: "לפי התשובות שלך, גם התמחור וגם המיתוג יעזרו לעסק. אפשר להתחיל במה שנוח לך יותר.",
 };
 
 export async function submitFitAssessment(

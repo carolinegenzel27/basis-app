@@ -6,7 +6,7 @@ import {
   type ActionState,
 } from "@/lib/actions/business-profile";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { AiWorkingOverlay } from "@/components/ui/AiWorkingOverlay";
+import { AiWorkingStatus } from "@/components/ui/AiWorkingStatus";
 import { ui } from "@/lib/ui";
 import {
   Camera,
@@ -72,17 +72,6 @@ export function OnboardingForm() {
 
   return (
     <form action={formAction} className="space-y-8">
-      <AiWorkingOverlay
-        title="מחפשים את העסק שלך בשוק"
-        messages={[
-          "שומרים את פרטי העסק...",
-          "בודקים מה עסקים כמו שלך מוכרים",
-          "סורקים מחירונים ואתרי השוואת מחירים...",
-          "משווים מחירים בין עסקים דומים...",
-          "מסדרים לך רשימת שירותים עם טווחי מחיר",
-          "כמעט שם! עוד כמה שניות...",
-        ]}
-      />
 
       {/* Wide two-column grid across the whole page - not a small boxed
           card. Full-width rows are the fields that need the room. */}
@@ -96,7 +85,6 @@ export function OnboardingForm() {
             name="business_name"
             type="text"
             required
-            placeholder="למשל: המאפייה של נועה"
             className={inputClass}
           />
         </div>
@@ -112,7 +100,6 @@ export function OnboardingForm() {
               name="slug"
               type="text"
               required
-              placeholder="noa-bakery"
               pattern="[a-z0-9-]+"
               className="flex-1 min-w-0 px-4 py-3 text-[15px] focus:outline-none placeholder:text-ink/35"
             />
@@ -134,7 +121,6 @@ export function OnboardingForm() {
             maxLength={60}
             list="profession-suggestions"
             autoComplete="off"
-            placeholder="מה העסק עושה? אפשר לכתוב כל תחום"
             value={profession}
             onChange={(e) => setProfession(e.target.value)}
             className={inputClass}
@@ -176,7 +162,6 @@ export function OnboardingForm() {
             name="business_description"
             rows={3}
             maxLength={300}
-            placeholder="למשל: עוגות מעוצבות לימי הולדת, מגשי קינוחים לאירועים, סדנאות אפייה"
             className={`${inputClass} resize-none`}
           />
           <p className={ui.hint}>
@@ -216,6 +201,18 @@ export function OnboardingForm() {
       </div>
 
       {state.error && <p className={ui.error} role="alert">{state.error}</p>}
+
+      <AiWorkingStatus
+        title="מחפשים את העסק שלך בשוק"
+        messages={[
+          "שומרים את פרטי העסק...",
+          "בודקים מה עסקים כמו שלך מוכרים",
+          "סורקים מחירונים ואתרי השוואת מחירים...",
+          "משווים מחירים בין עסקים דומים...",
+          "מסדרים לך רשימת שירותים עם טווחי מחיר",
+          "כמעט שם! עוד כמה שניות...",
+        ]}
+      />
 
       <div className="md:max-w-sm">
         <SubmitButton pendingText="מחפשים...">המשך לשאלון התאמה</SubmitButton>

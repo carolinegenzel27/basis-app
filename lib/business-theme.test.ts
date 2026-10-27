@@ -35,6 +35,17 @@ describe("getBusinessTheme", () => {
     expect(theme.style).toBe("professional");
   });
 
+  it.each([
+    ["קבלנית אלומיניום", "construction"],
+    ["צלמת אירועים", "photo"],
+    ["מתווכת נדל\"ן", "realestate"],
+    ["שפית פרטית", "food"],
+    ["חשמלאית", "construction"],
+    ["מהנדסת בניין", "architecture"],
+  ])("feminine form %s -> %s", (profession, key) => {
+    expect(getBusinessTheme(profession, "x").key).toBe(key);
+  });
+
   it("keeps playful businesses playful, with playful section titles", () => {
     const theme = getBusinessTheme("קונדיטוריה", "x");
     expect(theme.style).toBe("playful");

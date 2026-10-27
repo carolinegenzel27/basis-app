@@ -25,15 +25,27 @@ function isImageFile(fileName: string): boolean {
   return !!ext && IMAGE_EXTENSIONS.includes(ext);
 }
 
+const PROFILE_COLUMNS =
+  "business_profile_id, slug, business_name, profession, about_me, experience_text, additional_info, photo_url, uvp_statement, website_text";
+
 async function getProfile(slug: string): Promise<PublicProfile | null> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("public_business_profiles")
-    .select(
-      "business_profile_id, slug, business_name, profession, about_me, experience_text, additional_info, photo_url, uvp_statement, website_text"
-    )
+    .select(`${PROFILE_COLUMNS}, public_tagline`)
     .eq("slug", slug)
     .maybeSingle();
+
+  // Until supabase/public_page_tagline.sql has been run the view has no
+  // public_tagline column - fall back instead of 404-ing every page.
+  if (error) {
+    const { data: fallback } = await supabase
+      .from("public_business_profiles")
+      .select(PROFILE_COLUMNS)
+      .eq("slug", slug)
+      .maybeSingle();
+    return fallback;
+  }
 
   return data;
 }

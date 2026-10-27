@@ -23,7 +23,6 @@ export function SignInForm() {
           required
           autoComplete="email"
           dir="ltr"
-          placeholder="you@example.com"
           className={`${ui.input} text-right`}
         />
       </div>

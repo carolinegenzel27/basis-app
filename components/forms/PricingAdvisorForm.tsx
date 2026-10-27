@@ -8,7 +8,7 @@ import {
   type SearchState,
 } from "@/lib/actions/pricing";
 import { SubmitButton } from "@/components/ui/SubmitButton";
-import { AiWorkingOverlay } from "@/components/ui/AiWorkingOverlay";
+import { AiWorkingStatus } from "@/components/ui/AiWorkingStatus";
 import { PriceTag } from "@/components/illustrations/BusinessIcons";
 import { ui } from "@/lib/ui";
 
@@ -110,8 +110,7 @@ export function PricingSearchForm({
 
   return (
     <div className="space-y-3">
-      <form action={formAction} className="flex flex-col sm:flex-row gap-2">
-        <AiWorkingOverlay title="מחפשים מחירים בשוק" messages={SEARCH_MESSAGES} />
+      <form action={formAction} className="flex flex-col sm:flex-row sm:flex-wrap gap-2">
         <input type="hidden" name="business_profile_id" value={businessProfileId} />
         <label htmlFor="service_query" className="sr-only">
           שירות או מוצר לחיפוש
@@ -122,12 +121,12 @@ export function PricingSearchForm({
           type="text"
           maxLength={80}
           required={hasOptions}
-          placeholder={hasOptions ? "למשל: עוגת חתונה 3 קומות" : "אפשר לכתוב שירות מסוים, או להשאיר ריק"}
           className={`flex-1 ${ui.input}`}
         />
         <div className="sm:w-44">
           <SubmitButton pendingText="מחפשים...">{hasOptions ? "חפש מחיר" : "חפש בשוק"}</SubmitButton>
         </div>
+        <AiWorkingStatus title="מחפשים מחירים בשוק" messages={SEARCH_MESSAGES} />
       </form>
       {state.error && <p className={ui.error} role="alert">{state.error}</p>}
       {state.success && (
@@ -143,13 +142,13 @@ export function RefreshMarketSearchButton({ businessProfileId }: { businessProfi
   const [state, formAction] = useActionState(searchPricingOptions, initialSearchState);
 
   return (
-    <form action={formAction} className="inline">
-      <AiWorkingOverlay title="מרעננים את חיפוש השוק" messages={SEARCH_MESSAGES} />
+    <form action={formAction} className="contents">
       <input type="hidden" name="business_profile_id" value={businessProfileId} />
       <button type="submit" className="text-sm font-semibold text-blue-700 hover:underline underline-offset-4">
         חיפוש מחדש של כל המחירים
       </button>
       {state.error && <span className="text-xs text-red-600 ms-2">{state.error}</span>}
+      <AiWorkingStatus title="מרעננים את חיפוש השוק" messages={SEARCH_MESSAGES} />
     </form>
   );
 }

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Hides the black "Rendering..." badge Next.js shows in the corner during
+  // local development - it looked like part of the app. Dev-only anyway.
+  devIndicators: false,
   experimental: {
     serverActions: {
       // Next.js caps Server Action request bodies at 1MB by default - way

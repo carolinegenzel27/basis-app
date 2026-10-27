@@ -7,6 +7,8 @@ import { DeleteDocumentButton } from "@/components/forms/DeleteDocumentButton";
 import { ui } from "@/lib/ui";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { Storefront } from "@/components/illustrations/BusinessIcons";
+import { getBusinessTheme } from "@/lib/business-theme";
+import { professionLabel } from "@/lib/professions";
 
 export default async function PublicProfilePage() {
   const supabase = await createClient();
@@ -17,7 +19,7 @@ export default async function PublicProfilePage() {
   const { data: businessProfile, error: profileError } = await supabase
     .from("business_profiles")
     .select(
-      "id, slug, about_me, experience_text, additional_info, photo_url, public_uvp_text, public_website_text"
+      "id, slug, profession, about_me, experience_text, additional_info, photo_url, public_uvp_text, public_website_text, public_tagline"
     )
     .eq("user_id", user!.id)
     .maybeSingle();
@@ -34,7 +36,8 @@ export default async function PublicProfilePage() {
           שגיאה בטעינת העמוד: {profileError.message}
         </p>
         <p className={`${ui.muted} text-sm mt-2`}>
-          סביר שצריך להריץ את supabase/add_profile_media.sql ב-SQL Editor.
+          סביר שצריך להריץ ב-SQL Editor את supabase/add_profile_media.sql או
+          את supabase/public_page_tagline.sql.
         </p>
       </div>
     );
@@ -71,6 +74,15 @@ export default async function PublicProfilePage() {
     .eq("business_profile_id", businessProfile.id)
     .maybeSingle();
 
+  // What each field starts with: the owner's saved text if they ever saved
+  // one ("" = they removed it), otherwise the branding idea / automatic line.
+  const defaultTagline = getBusinessTheme(
+    professionLabel(businessProfile.profession),
+    businessProfile.slug
+  ).tagline;
+  const brandingUvp = branding?.uvp_statement ?? null;
+  const brandingAbout = branding?.website_text ?? null;
+
   return (
     <div className={`${ui.pageNarrow} space-y-6`}>
       <PageHeader
@@ -100,16 +112,20 @@ export default async function PublicProfilePage() {
       </section>
 
       <section aria-labelledby="content-title" className={`${ui.card} ${ui.cardPad} space-y-4`}>
-        <h2 id="content-title" className={ui.h2}>קצת עליי, ניסיון ופרטים נוספים</h2>
+        <h2 id="content-title" className={ui.h2}>מה כתוב בעמוד</h2>
         <ProfileContentForm
           businessProfileId={businessProfile.id}
-          defaultAboutMe={businessProfile.about_me ?? ""}
-          defaultExperienceText={businessProfile.experience_text ?? ""}
-          defaultAdditionalInfo={businessProfile.additional_info ?? ""}
-          defaultPublicUvpText={businessProfile.public_uvp_text ?? ""}
-          defaultPublicWebsiteText={businessProfile.public_website_text ?? ""}
-          generatedUvpStatement={branding?.uvp_statement ?? null}
-          generatedWebsiteText={branding?.website_text ?? null}
+          tagline={businessProfile.public_tagline ?? defaultTagline}
+          defaultTagline={defaultTagline}
+          uvpText={businessProfile.public_uvp_text ?? brandingUvp ?? ""}
+          aboutMe={
+            businessProfile.about_me ??
+            (businessProfile.public_website_text || brandingAbout || "")
+          }
+          experienceText={businessProfile.experience_text ?? ""}
+          additionalInfo={businessProfile.additional_info ?? ""}
+          brandingUvp={brandingUvp}
+          brandingAbout={brandingAbout}
         />
       </section>
 

@@ -1,191 +1,197 @@
 "use client";
 
-import { useActionState, useRef } from "react";
+import { useActionState, useState } from "react";
 import {
   updateProfileContent,
   type ActionState,
 } from "@/lib/actions/profile-media";
-import { ui } from "@/lib/ui";
 import { SubmitButton } from "@/components/ui/SubmitButton";
+import { ui } from "@/lib/ui";
 
 const initialState: ActionState = { success: false };
 
-export function ProfileContentForm({
-  businessProfileId,
-  defaultAboutMe = "",
-  defaultExperienceText = "",
-  defaultAdditionalInfo = "",
-  defaultPublicUvpText = "",
-  defaultPublicWebsiteText = "",
-  generatedUvpStatement,
-  generatedWebsiteText,
+// One field of the public page, with a small X in its corner to remove it
+// from the page, and (when there's a suggested text - from the branding
+// ideas or the automatic opening line) a link to bring that text back.
+function RemovableField({
+  name,
+  label,
+  description,
+  initialValue,
+  suggestion,
+  suggestionLabel,
+  placeholder,
+  maxLength,
+  rows,
 }: {
-  businessProfileId: string;
-  defaultAboutMe?: string;
-  defaultExperienceText?: string;
-  defaultAdditionalInfo?: string;
-  defaultPublicUvpText?: string;
-  defaultPublicWebsiteText?: string;
-  // The current output of the מיתוג questionnaire, if she's filled it out -
-  // only used here as a one-click starting point (see the "טעינה מהמיתוג"
-  // buttons below), never written to the public page on its own.
-  generatedUvpStatement?: string | null;
-  generatedWebsiteText?: string | null;
+  name: string;
+  label: string;
+  description?: string;
+  initialValue: string;
+  suggestion?: string | null;
+  suggestionLabel?: string;
+  placeholder?: string;
+  maxLength: number;
+  rows?: number;
 }) {
-  const [state, formAction] = useActionState(updateProfileContent, initialState);
-  const uvpRef = useRef<HTMLTextAreaElement>(null);
-  const websiteRef = useRef<HTMLTextAreaElement>(null);
-  const hasBranding = !!(generatedUvpStatement || generatedWebsiteText);
+  const [value, setValue] = useState(initialValue);
+  const removed = value.trim() === "";
+  const canRestore = !!suggestion && value !== suggestion;
+  const inputId = `field-${name}`;
+
+  const fieldClass = `${ui.input} pe-12 ${removed ? "bg-ink/[0.02]" : ""}`;
 
   return (
-    <form action={formAction} className="space-y-5">
+    <div className="rounded-2xl border border-ink/[0.08] bg-white p-4 sm:p-5 transition">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 mb-2">
+        <label htmlFor={inputId} className="font-semibold text-ink">
+          {label}
+        </label>
+        {canRestore && (
+          <button
+            type="button"
+            onClick={() => setValue(suggestion!)}
+            className="text-sm font-semibold text-blue-700 hover:underline underline-offset-4"
+          >
+            {suggestionLabel ?? "שחזור הטקסט המוצע"}
+          </button>
+        )}
+      </div>
+      {description && <p className="text-sm text-ink/55 -mt-1 mb-2.5">{description}</p>}
+
+      <div className="relative">
+        {rows ? (
+          <textarea
+            id={inputId}
+            name={name}
+            dir="rtl"
+            rows={rows}
+            maxLength={maxLength}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={placeholder}
+            className={`${fieldClass} resize-y min-h-[3.25rem] leading-relaxed`}
+          />
+        ) : (
+          <input
+            id={inputId}
+            name={name}
+            type="text"
+            maxLength={maxLength}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder={placeholder}
+            className={fieldClass}
+          />
+        )}
+        {!removed && (
+          <button
+            type="button"
+            onClick={() => setValue("")}
+            aria-label={`הסרת "${label}" מהעמוד`}
+            title="הסרה מהעמוד"
+            className="absolute top-2.5 left-2.5 w-7 h-7 rounded-full bg-ink/[0.06] text-ink/60 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-blue-600/30"
+          >
+            <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
+              <path d="M4 4l8 8M12 4l-8 8" />
+            </svg>
+          </button>
+        )}
+      </div>
+      {removed && <p className="text-xs text-ink/45 mt-2">לא יוצג בעמוד</p>}
+    </div>
+  );
+}
+
+export function ProfileContentForm({
+  businessProfileId,
+  tagline,
+  defaultTagline,
+  uvpText,
+  aboutMe,
+  experienceText,
+  additionalInfo,
+  brandingUvp,
+  brandingAbout,
+}: {
+  businessProfileId: string;
+  // Current values (already resolved by the page: the owner's saved text,
+  // or the branding idea / automatic line if they never set it).
+  tagline: string;
+  defaultTagline: string;
+  uvpText: string;
+  aboutMe: string;
+  experienceText: string;
+  additionalInfo: string;
+  // The branding ideas, offered as a one-click "bring it back".
+  brandingUvp?: string | null;
+  brandingAbout?: string | null;
+}) {
+  const [state, formAction] = useActionState(updateProfileContent, initialState);
+
+  return (
+    <form action={formAction} className="space-y-4">
       <input type="hidden" name="business_profile_id" value={businessProfileId} />
+      {/* The website text was merged into "קצת עליי" - clear the old field. */}
+      <input type="hidden" name="public_website_text" value="" />
 
-      {hasBranding && (
-        <div className="rounded-xl bg-sky-soft/60 border border-blue-200/60 p-4 sm:p-5 space-y-4">
-          <p className="text-sm text-ink/80 leading-relaxed">
-            יצרת חומרי מיתוג בעמוד &quot;מיתוג&quot; - כאן אפשר לבחור אם להציג
-            אותם בעמוד הציבורי שלך, ולערוך את הניסוח בדיוק כרצונך. שדה ריק לא
-            יוצג בעמוד.
-          </p>
+      <p className="text-sm text-ink/60 leading-relaxed">
+        {brandingUvp || brandingAbout ? "מילאנו בשבילך את מה שיצרת בעמוד המיתוג. " : ""}
+        מה שלא מתאים לך, מסירים בלחיצה על ה-X. השינויים יופיעו בעמוד אחרי שמירה.
+      </p>
 
-          {generatedUvpStatement && (
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label htmlFor="public_uvp_text" className="block text-sm font-medium">
-                  משפט מיתוג (UVP)
-                </label>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (uvpRef.current) uvpRef.current.value = generatedUvpStatement;
-                    }}
-                    className="text-xs font-semibold text-blue-700 hover:underline"
-                  >
-                    טעינה מהמיתוג
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (uvpRef.current) uvpRef.current.value = "";
-                    }}
-                    className="text-xs font-semibold text-red-600 hover:underline"
-                  >
-                    מחיקה
-                  </button>
-                </div>
-              </div>
-              <textarea
-                id="public_uvp_text"
-                name="public_uvp_text"
-                ref={uvpRef}
-                dir="rtl"
-                rows={2}
-                maxLength={400}
-                defaultValue={defaultPublicUvpText}
-                placeholder='לחצו "טעינה מהמיתוג" כדי להתחיל מהטקסט שיצרת, או כתבו בעצמכם'
-                className={ui.input}
-              />
-            </div>
-          )}
-
-          {generatedWebsiteText && (
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label htmlFor="public_website_text" className="block text-sm font-medium">
-                  טקסט לאתר
-                </label>
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (websiteRef.current) websiteRef.current.value = generatedWebsiteText;
-                    }}
-                    className="text-xs font-semibold text-blue-700 hover:underline"
-                  >
-                    טעינה מהמיתוג
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (websiteRef.current) websiteRef.current.value = "";
-                    }}
-                    className="text-xs font-semibold text-red-600 hover:underline"
-                  >
-                    מחיקה
-                  </button>
-                </div>
-              </div>
-              <textarea
-                id="public_website_text"
-                name="public_website_text"
-                ref={websiteRef}
-                dir="rtl"
-                rows={4}
-                maxLength={800}
-                defaultValue={defaultPublicWebsiteText}
-                placeholder='לחצו "טעינה מהמיתוג" כדי להתחיל מהטקסט שיצרת, או כתבו בעצמכם'
-                className={ui.input}
-              />
-            </div>
-          )}
-        </div>
-      )}
-
-      <div>
-        <label htmlFor="about_me" className={ui.label}>
-          קצת עליי
-        </label>
-        <textarea
-          id="about_me"
-          name="about_me"
-          dir="rtl"
-          rows={3}
-          maxLength={600}
-          defaultValue={defaultAboutMe}
-          placeholder="כמה משפטים על עצמך ומה מייחד אותך"
-          className={ui.input}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="experience_text" className={ui.label}>
-          ניסיון
-        </label>
-        <textarea
-          id="experience_text"
-          name="experience_text"
-          dir="rtl"
-          rows={3}
-          maxLength={600}
-          defaultValue={defaultExperienceText}
-          placeholder="ותק, הכשרות, הישגים בולטים"
-          className={ui.input}
-        />
-      </div>
-
-      <div>
-        <label htmlFor="additional_info" className={ui.label}>
-          לפרטים נוספים
-        </label>
-        <textarea
-          id="additional_info"
-          name="additional_info"
-          dir="rtl"
-          rows={3}
-          maxLength={600}
-          defaultValue={defaultAdditionalInfo}
-          placeholder="שעות פעילות, אזור שירות, כל דבר אחר שחשוב שלקוחות ידעו"
-          className={ui.input}
-        />
-      </div>
+      <RemovableField
+        name="public_tagline"
+        label="שורת פתיחה"
+        description="השורה הקטנה מעל שם העסק."
+        initialValue={tagline}
+        suggestion={defaultTagline}
+        suggestionLabel="שחזור השורה האוטומטית"
+        maxLength={80}
+      />
+      <RemovableField
+        name="public_uvp_text"
+        label="משפט מיתוג"
+        description="המשפט הגדול מתחת לשם העסק."
+        initialValue={uvpText}
+        suggestion={brandingUvp}
+        suggestionLabel="שחזור מהמיתוג"
+        placeholder="משפט אחד שמסביר מה העסק נותן ולמי"
+        maxLength={400}
+        rows={2}
+      />
+      <RemovableField
+        name="about_me"
+        label="קצת עליי"
+        initialValue={aboutMe}
+        suggestion={brandingAbout}
+        suggestionLabel="שחזור מהמיתוג"
+        placeholder="כמה משפטים על עצמך ועל מה שמייחד את העסק"
+        maxLength={1000}
+        rows={5}
+      />
+      <RemovableField
+        name="experience_text"
+        label="ניסיון"
+        initialValue={experienceText}
+        placeholder="ותק, הכשרות, הישגים בולטים"
+        maxLength={600}
+        rows={3}
+      />
+      <RemovableField
+        name="additional_info"
+        label="יצירת קשר ופרטים נוספים"
+        initialValue={additionalInfo}
+        placeholder="טלפון, שעות פעילות, אזור שירות"
+        maxLength={600}
+        rows={3}
+      />
 
       {state.error && <p className={ui.error} role="alert">{state.error}</p>}
-      {state.success && (
-        <p className={ui.success} role="status">נשמר!</p>
-      )}
-      <SubmitButton>שמירה</SubmitButton>
+      {state.success && <p className={ui.success} role="status">נשמר! העמוד שלך עודכן.</p>}
+      <div className="sm:max-w-xs">
+        <SubmitButton pendingText="שומרים...">שמירת העמוד</SubmitButton>
+      </div>
     </form>
   );
 }

@@ -20,10 +20,20 @@ export function FitAssessmentQuestionnaire({ businessProfileId }: { businessProf
           ✓
         </span>
         <h2 className={ui.h2}>ההמלצה שלנו</h2>
-        <p className="text-ink/70 text-lg leading-relaxed">{state.resultMessage}</p>
-        <a href="/dashboard" className={ui.btnPrimary}>
-          המשך למסך הבית
-        </a>
+        <p className="text-ink/70 text-lg leading-relaxed max-w-lg mx-auto">{state.resultMessage}</p>
+        <div className="flex flex-wrap justify-center gap-3 pt-2">
+          {state.recommendation !== "both" && (
+            <a
+              href={state.recommendation === "branding" ? "/branding" : "/pricing-advisor"}
+              className={ui.btnPrimary}
+            >
+              {state.recommendation === "branding" ? "מתחילים במיתוג" : "מתחילים ביועץ התמחור"}
+            </a>
+          )}
+          <a href="/dashboard" className={state.recommendation === "both" ? ui.btnPrimary : ui.btnSecondary}>
+            המשך למסך הבית
+          </a>
+        </div>
       </div>
     );
   }

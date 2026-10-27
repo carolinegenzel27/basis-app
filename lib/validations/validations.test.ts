@@ -180,12 +180,23 @@ describe("profileContentSchema", () => {
     ).toBe(true);
   });
 
-  it("rejects about_me over 600 characters", () => {
+  // 1000, not 600: "קצת עליי" now also holds the branding website text.
+  it("rejects about_me over 1000 characters", () => {
     expect(
       profileContentSchema.safeParse({
         business_profile_id: validId,
-        about_me: "א".repeat(601),
+        about_me: "א".repeat(1001),
       }).success
+    ).toBe(false);
+  });
+
+  it("accepts a removed (empty) tagline and rejects one over 80 characters", () => {
+    expect(
+      profileContentSchema.safeParse({ business_profile_id: validId, public_tagline: "" }).success
+    ).toBe(true);
+    expect(
+      profileContentSchema.safeParse({ business_profile_id: validId, public_tagline: "א".repeat(81) })
+        .success
     ).toBe(false);
   });
 

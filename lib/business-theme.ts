@@ -67,6 +67,9 @@ const PROFESSIONAL_LABELS: BusinessTheme["labels"] = {
 // it); accent = buttons and highlights (dark text on it, AA contrast).
 // Checked before the playful themes, so e.g. "בניית אתרים" is tech, not
 // construction, and "הנהלת חשבונות" never falls through to anything cute.
+// Keywords are word stems where possible, and list the feminine form when
+// the masculine one ends in a final letter (קבלן -> קבלנית, צלם -> צלמת),
+// since "קבלנית" does not contain "קבלן".
 const PROFESSIONAL_THEMES: ThemeDef[] = [
   {
     key: "tech",
@@ -80,7 +83,7 @@ const PROFESSIONAL_THEMES: ThemeDef[] = [
   {
     key: "construction",
     style: "professional",
-    keywords: ["קבלן", "בנייה", "בניה", "שיפוצ", "שיפוץ", "אינסטלט", "חשמלא", "ריצוף", "גבס", "איטום", "מסגר", "נגר", "construction", "contractor"],
+    keywords: ["קבלן", "קבלנ", "בנייה", "בניה", "אלומיניום", "פרגול", "מטבחים", "ריהוט", "שיפוצ", "שיפוץ", "אינסטלט", "חשמלא", "ריצוף", "גבס", "איטום", "מסגר", "נגר", "construction", "contractor"],
     tagline: "בונים נכון, מהיסוד",
     colors: { accent: "#f59e0b", deep: "#1f2937", soft: "#f3f4f6", wash: "#ffffff" },
     icons: ["helmet"],
@@ -89,7 +92,7 @@ const PROFESSIONAL_THEMES: ThemeDef[] = [
   {
     key: "legal",
     style: "professional",
-    keywords: ["עורך דין", "עורכת דין", "עו\"ד", "משפט", "נוטריון", "lawyer", "legal"],
+    keywords: ["עורך דין", "עורכת דין", "עורכי דין", "עו\"ד", "משפט", "נוטריון", "lawyer", "legal"],
     tagline: "ליווי משפטי מקצועי ואישי",
     colors: { accent: "#c9a96e", deep: "#1e293b", soft: "#f8f6f1", wash: "#ffffff" },
     icons: ["scales"],
@@ -106,7 +109,7 @@ const PROFESSIONAL_THEMES: ThemeDef[] = [
   {
     key: "realestate",
     style: "professional",
-    keywords: ["נדל", "תיווך", "מתווך", "שמאי", "real estate"],
+    keywords: ["נדל", "תיווך", "מתווך", "מתווכ", "שמאי", "שמאית", "real estate"],
     tagline: "הבית הבא שלכם מתחיל כאן",
     colors: { accent: "#fbbf24", deep: "#172554", soft: "#f5f7fb", wash: "#ffffff" },
     icons: ["house"],
@@ -133,7 +136,7 @@ const THEMES: ThemeDef[] = [
   },
   {
     key: "food",
-    keywords: ["שף", "בישול", "קייטרינג", "אוכל", "מסעד", "בית קפה", "קפה", "chef", "food", "catering"],
+    keywords: ["שף", "שפית", "בישול", "קייטרינג", "אוכל", "מסעד", "בית קפה", "קפה", "chef", "food", "catering"],
     tagline: "טעמים שזוכרים",
     colors: { accent: "#f59e0b", deep: "#92400e", soft: "#fef3c7", wash: "#fffbeb" },
     icons: ["coffee", "cupcake", "storefront"],
@@ -161,7 +164,7 @@ const THEMES: ThemeDef[] = [
   },
   {
     key: "photo",
-    keywords: ["צילום", "צלם", "וידאו", "סרט", "photo", "video"],
+    keywords: ["צילום", "צלם", "צלמ", "וידאו", "סרט", "photo", "video"],
     tagline: "רגעים שנשארים לתמיד",
     colors: { accent: "#4f8bff", deep: "#1e40af", soft: "#dde9ff", wash: "#f5f8ff" },
     icons: ["camera", "palette", "storefront"],

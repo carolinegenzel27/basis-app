@@ -17,6 +17,8 @@ export type PublicProfile = {
   photo_url: string | null;
   uvp_statement: string | null;
   website_text: string | null;
+  // null = automatic line for the kind of business, "" = removed by the owner
+  public_tagline?: string | null;
 };
 
 export type PublicDocument = {
@@ -38,7 +40,11 @@ type ViewProps = {
 // so the page only does the data loading.
 export function PublicBusinessView(props: ViewProps) {
   const professionText = professionLabel(props.profile.profession);
-  const theme = getBusinessTheme(professionText, props.profile.slug);
+  const auto = getBusinessTheme(professionText, props.profile.slug);
+  // The owner can keep the automatic opening line, write their own, or
+  // remove it (see the public-profile editor).
+  const tagline = props.profile.public_tagline ?? auto.tagline;
+  const theme = { ...auto, tagline };
 
   return theme.style === "professional" ? (
     <ProfessionalBusinessView {...props} theme={theme} professionText={professionText} />
@@ -92,7 +98,9 @@ function PlayfulBusinessView({
               {professionText}
             </p>
             <div>
-              <p className="text-[var(--deep)] font-semibold text-lg">{theme.tagline}</p>
+              {theme.tagline && (
+                <p className="text-[var(--deep)] font-semibold text-lg">{theme.tagline}</p>
+              )}
               <h1 className="text-4xl sm:text-6xl font-extrabold text-ink leading-[1.1] mt-1 break-words">
                 {profile.business_name}
               </h1>
@@ -352,9 +360,11 @@ function ProfessionalBusinessView({
             <h1 className="text-4xl sm:text-6xl font-extrabold leading-[1.1] break-words">
               {profile.business_name}
             </h1>
-            <p className="text-xl sm:text-2xl text-white/85 leading-relaxed max-w-2xl">
-              {profile.uvp_statement ?? theme.tagline}
-            </p>
+            {(profile.uvp_statement || theme.tagline) && (
+              <p className="text-xl sm:text-2xl text-white/85 leading-relaxed max-w-2xl">
+                {profile.uvp_statement || theme.tagline}
+              </p>
+            )}
             <div className="flex flex-wrap gap-3 pt-2">
               {profile.additional_info && (
                 <a
