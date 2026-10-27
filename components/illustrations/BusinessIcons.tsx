@@ -183,6 +183,22 @@ export function Storefront(props: IconProps) {
   );
 }
 
+export function Car(props: IconProps) {
+  return (
+    <Svg {...props}>
+      <path d="M14 56 L22 36 C24 32 27 30 32 30 L64 30 C69 30 72 32 74 36 L82 56 Z" fill="#dde9ff" {...stroke} />
+      <path d="M48 31 L48 55" fill="none" {...stroke} />
+      <rect x="8" y="54" width="80" height="20" rx="8" fill="#ff7a59" {...stroke} />
+      <circle cx="28" cy="76" r="9" fill={INK} />
+      <circle cx="68" cy="76" r="9" fill={INK} />
+      <circle cx="28" cy="76" r="3.5" fill="#cbd5e1" />
+      <circle cx="68" cy="76" r="3.5" fill="#cbd5e1" />
+      <rect x="12" y="60" width="10" height="6" rx="2" fill="#fff1c7" {...stroke} strokeWidth={2} />
+      <rect x="74" y="60" width="10" height="6" rx="2" fill="#fff1c7" {...stroke} strokeWidth={2} />
+    </Svg>
+  );
+}
+
 export function Sparkle({ className, color = "#ffc93c" }: { className?: string; color?: string }) {
   return (
     <svg viewBox="0 0 40 40" className={className} aria-hidden="true">
