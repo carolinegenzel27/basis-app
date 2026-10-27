@@ -76,8 +76,9 @@ export async function researchBusinessPricing(
         {
           type: "web_search_20260209",
           name: "web_search",
+          // No user_location: web search rejects country "IL". The system
+          // prompt already points the search at the Israeli market.
           max_uses: 6,
-          user_location: { type: "approximate", country: "IL" },
         },
       ],
       messages,
@@ -108,7 +109,9 @@ export async function researchBusinessPricing(
   });
 
   const services = extracted.parsed_output?.services ?? [];
-  return cleanServices(services);
+  // A one-service search tends to come back with related extras - keep it
+  // short so the owner's list doesn't fill up with things they didn't ask for.
+  return cleanServices(services).slice(0, serviceQuery ? 3 : 8);
 }
 
 // Model output is still untrusted data - drop anything that can't be stored
